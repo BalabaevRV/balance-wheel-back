@@ -3,3 +3,8 @@ export interface SignupPayload {
 	password: string
 	name?: string
 }
+
+export interface LoginPayload {
+	login: string,
+	password: string
+}

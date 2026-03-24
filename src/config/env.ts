@@ -14,7 +14,8 @@ const requiredEnvVars = [
   'DB_PORT',
   'DB_USER',
   'DB_PASSWORD',
-  'DB_NAME'
+  'DB_NAME',
+  'SECRET'
 ];
 
 // Проверяем наличие обязательных переменных
@@ -29,7 +30,8 @@ export const config = {
   dbPort: parseInt(process.env.DB_PORT || '5432', 10),
   dbUser: process.env.DB_USER || 'postgres',
   dbPassword: process.env.DB_PASSWORD || 'postgres',
-  dbName: process.env.DB_NAME || 'myapp_dev'
+  dbName: process.env.DB_NAME || 'myapp_dev',
+  secret: process.env.SECRET || 'secret'
 } as const;
 
 // Типизация конфига
