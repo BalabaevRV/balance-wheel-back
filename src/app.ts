@@ -1,7 +1,9 @@
-import { createAllTables } from './models/CreateTables'
+// import { createAllTables } from './models/CreateTables'
+import authRouter from '@/routers/auth'
+
+
 const express = require('express')
 const cors = require('cors')
-import authRouter from '@/routers/auth'
 const app = express()
 const port = 3000
 

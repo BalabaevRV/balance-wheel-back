@@ -9,11 +9,9 @@ export const logoutUser = () => {
     console.log('logoutUser')
 }
 
-
 export const signupUser = async (req: Request, res: Response) => {
     const { login, password, name } = req.body
-    const response = await userSignup(login, password, name)
-    console.log(response)
+    const response = await userSignup({login, password, name})
     res.status(201).json({ 
         message: 'User created successfully',
         user: { login, name }
