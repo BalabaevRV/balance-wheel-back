@@ -15,7 +15,9 @@ app.get('/', (req: any, res: any) => {
 })
 
 app.use(authRouter)
-createAllTables()
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+export default app
