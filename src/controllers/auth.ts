@@ -4,7 +4,6 @@ import { userSignup, userLogin } from '@/models/UserModel'
 export const loginUser = async (req: Request, res: Response)  => {
     const { login, password } = req.body
     const jwt = await userLogin({login, password})
-    console.log(jwt)
     res.status(201).json({ 
         jwt: jwt
     });

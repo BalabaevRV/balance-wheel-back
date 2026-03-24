@@ -6,12 +6,15 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
     if (req.headers.authorization) {
         verify(req.headers.authorization.split('')[1], config.secret, (err, payload) => {
             if (err) {
-
+                next()
+            } else if (payload && typeof payload === 'object' && 'login' in payload) {
+                req.user = payload.login;
+                next();
             }
-        })
-    }
-
+        }) 
+    }            
 }
+
 
 export const authGuard = (req: Request, res: Response, next: NextFunction): void => {
     if (req.user) {

@@ -1,5 +1,5 @@
 import { pool } from '@/config/DatabasePool'
-import { SignupPayload, LoginPayload } from '@/types'
+import { SignupPayload, LoginPayload, DeletePayload, GetUserInfoPayload } from '@/types'
 import { config } from '@/config/env';
 import { sign } from 'jsonwebtoken'
 
@@ -22,7 +22,7 @@ export const userSignup = async (signupPayload: SignupPayload)  => {
 } 
 
 export const userLogin = async (loginPayload: LoginPayload) => {
-       const query = `
+    const query = `
         SELECT login
         FROM users
         WHERE login = $1 and password = $2 LIMIT 1
@@ -44,16 +44,62 @@ export const userLogin = async (loginPayload: LoginPayload) => {
 
 
 export const logout = () => {
+    //TODO
+    //надо ли оно
 
 }
 
-export const deleteUser = () => {
-
+export const deleteCurrentUser = async (deletePayload: DeletePayload) => {
+    const query = `
+        DELETE 
+        FROM users
+        WHERE login = $1 
+    `;
+    
+    const values = [deletePayload.login];
+        
+    try {
+        await pool.query(query, values);
+    } catch (error) {
+        console.error('❌ Error during delete user:', error);
+        throw error;
+    }
 }   
 
-export const getUserById = () => {
-
+export const getUserInfoByName =  async(getUserInfoPayload: GetUserInfoPayload) => {
+       const query = `
+        SELECT user_id, name 
+        FROM users
+        WHERE login = $1 LIMIT 1
+    `;
+    
+    const values = [getUserInfoPayload.login];
+    try {
+        const user = await pool.query(query, values);
+        return user
+    } catch (error) {
+        console.error('❌ Error during get info:', error);
+        throw error;
+    }
 }
+
+export const getUserInfoById = async(getUserInfoPayload: GetUserInfoPayload) => {
+       const query = `
+        SELECT user_id, name 
+        FROM users
+        WHERE id = $1 LIMIT 1
+    `;
+    
+    const values = [getUserInfoPayload.id];
+    try {
+        const user = await pool.query(query, values);
+        return user
+    } catch (error) {
+        console.error('❌ Error during get info:', error);
+        throw error;
+    }
+}
+
 
 const signJWT = (login: string, secret: string): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
