@@ -1,7 +1,8 @@
 import { pool } from '@/config/DatabasePool'
 import { SignupPayload, LoginPayload, DeletePayload, GetUserInfoPayload } from '@/types'
-import { config } from '@/config/env';
+import { config } from '@/config/env'
 import { sign } from 'jsonwebtoken'
+import { hash } from 'bcryptjs'
 
 export const userSignup = async (signupPayload: SignupPayload)  => {
     const query = `
@@ -9,11 +10,12 @@ export const userSignup = async (signupPayload: SignupPayload)  => {
         VALUES ($1, $2, $3, $4)
         RETURNING user_id, name, login, email
     `;
-    
-    const values = [signupPayload.name || signupPayload.login, signupPayload.login, signupPayload.login, signupPayload.password];
-        
     try {
+        const password = await hash(signupPayload.password, Number(config.salt))
+    const values = [signupPayload.name, signupPayload.login, signupPayload.email, password];
         await pool.query(query, values);
+        const jwt = await signJWT(signupPayload.login, config.secret)
+        return jwt
         console.log('✅ user was signup');
     } catch (error) {
         console.error('❌ Error during signup:', error);

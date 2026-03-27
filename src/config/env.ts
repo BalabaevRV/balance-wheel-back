@@ -15,7 +15,8 @@ const requiredEnvVars = [
   'DB_USER',
   'DB_PASSWORD',
   'DB_NAME',
-  'SECRET'
+  'SECRET',
+  'SALT'
 ];
 
 // Проверяем наличие обязательных переменных
@@ -31,7 +32,8 @@ export const config = {
   dbUser: process.env.DB_USER || 'postgres',
   dbPassword: process.env.DB_PASSWORD || 'postgres',
   dbName: process.env.DB_NAME || 'myapp_dev',
-  secret: process.env.SECRET || 'secret'
+  secret: process.env.SECRET || 'secret',
+  salt: Number(process.env.SALT) || 10
 } as const;
 
 // Типизация конфига

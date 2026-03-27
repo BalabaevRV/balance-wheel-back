@@ -14,10 +14,12 @@ export const logoutUser = async () => {
 }
 
 export const signupUser = async (req: Request, res: Response) => {
-    const { login, password, name } = req.body
-    await userSignup({login, password, name})
+    const { login, password, name, email } = req.body
+    const token = await userSignup({login, password, name, email })
     res.status(201).json({ 
         message: 'User created successfully',
-        user: { login, name }
+        success: true,
+        token: token,
+        user: { login, name, email }
     });
 }
