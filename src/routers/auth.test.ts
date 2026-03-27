@@ -5,14 +5,13 @@ import { describe, expect, test, beforeEach, afterEach } from '@jest/globals';
 
 describe('Auth Routes Integration Tests', () => {
     describe('POST /api/signup', () => {
-      test('should create new user successfully', async () => {
-        const userData = {
+      const userData = {
           name: 'John Doe',
           login: 'john_doe',
           email: 'john@example.com',
           password: 'SecurePass123!'
         };
-        
+      test('should create new user successfully', async () => {
         const response = await request(app)
           .post('/api/signup')
           .send(userData)
@@ -38,6 +37,17 @@ describe('Auth Routes Integration Tests', () => {
         // Проверяем, что пароль захеширован
         expect(dbResult.rows[0].password).not.toBe('SecurePass123!');
       });
+      test('should return 400 if user already exists', async () => {
       
+      const response = await request(app)
+        .post('/api/signup')
+        .send(userData)
+        .expect(400);
+      
+      expect(response.body.error).toBeDefined();
+    });
   })
+
+  
+
 })

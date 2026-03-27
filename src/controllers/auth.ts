@@ -14,12 +14,19 @@ export const logoutUser = async () => {
 }
 
 export const signupUser = async (req: Request, res: Response) => {
-    const { login, password, name, email } = req.body
-    const token = await userSignup({login, password, name, email })
-    res.status(201).json({ 
-        message: 'User created successfully',
-        success: true,
-        token: token,
-        user: { login, name, email }
-    });
-}
+  try {
+    const result = await userSignup(req.body);
+    res.status(201).json(result);
+  } catch (error) {
+    // Проверяем тип ошибки
+    if (error instanceof Error) {
+      if (error.message === 'User already exists') {
+        return res.status(400).json({ error: error.message });
+      }
+    }
+    
+    // Общая ошибка сервера
+    console.error('Signup error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

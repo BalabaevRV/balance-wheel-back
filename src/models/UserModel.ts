@@ -5,18 +5,35 @@ import { sign } from 'jsonwebtoken'
 import { hash } from 'bcryptjs'
 
 export const userSignup = async (signupPayload: SignupPayload)  => {
+    const { login, name, email, password } = signupPayload;
     const query = `
         INSERT INTO users (name, login, email, password) 
         VALUES ($1, $2, $3, $4)
         RETURNING user_id, name, login, email
     `;
+    
+    // Проверяем, существует ли пользователь
+    const existingUser = await pool.query(
+      'SELECT * FROM users WHERE login = $1 OR email = $2',
+      [login, email]
+    );
+    
+    if (existingUser.rows.length > 0) {
+        throw new Error('User already exists'); 
+    }
+
     try {
-        const password = await hash(signupPayload.password, Number(config.salt))
-    const values = [signupPayload.name, signupPayload.login, signupPayload.email, password];
+        const passwordHash = await hash(password, Number(config.salt))
+        const values = [name, login, email, passwordHash];
         await pool.query(query, values);
-        const jwt = await signJWT(signupPayload.login, config.secret)
-        return jwt
+        const jwt = await signJWT(login, config.secret)
         console.log('✅ user was signup');
+        return { 
+        message: 'User created successfully',
+        success: true,
+        token: jwt,
+        user: { login, name, email }
+    }
     } catch (error) {
         console.error('❌ Error during signup:', error);
         throw error;
