@@ -75,7 +75,6 @@ export const userLogin = async (loginPayload: LoginPayload) => {
 export const logout = () => {
     //TODO
     //надо ли оно
-
 }
 
 export const deleteCurrentUser = async (deletePayload: DeletePayload) => {

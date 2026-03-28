@@ -20,7 +20,8 @@ export const loginUser = async (req: Request, res: Response)  => {
 }
 
 export const logoutUser = async () => {
-     console.log('logoutUser')
+    //TODO
+    //надо ли оно
 }
 
 export const signupUser = async (req: Request, res: Response) => {
@@ -32,6 +33,9 @@ export const signupUser = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       if (error.message === 'User already exists') {
         return res.status(400).json({ error: error.message });
+      }
+      if (error.message === 'User not found') {
+        return res.status(404).json({ error: error.message });
       }
     }
     
