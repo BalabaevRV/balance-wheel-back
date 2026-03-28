@@ -2,7 +2,7 @@ import { pool } from '@/config/DatabasePool'
 import { SignupPayload, LoginPayload, DeletePayload, GetUserInfoPayload } from '@/types'
 import { config } from '@/config/env'
 import { sign } from 'jsonwebtoken'
-import { hash } from 'bcryptjs'
+import { hash, compare } from 'bcryptjs'
 
 export const userSignup = async (signupPayload: SignupPayload)  => {
     const { login, name, email, password } = signupPayload;
@@ -23,7 +23,7 @@ export const userSignup = async (signupPayload: SignupPayload)  => {
     }
 
     try {
-        const passwordHash = await hash(password, Number(config.salt))
+        const passwordHash = await hash(password, config.salt)
         const values = [name, login, email, passwordHash];
         await pool.query(query, values);
         const jwt = await signJWT(login, config.secret)
@@ -42,21 +42,31 @@ export const userSignup = async (signupPayload: SignupPayload)  => {
 
 export const userLogin = async (loginPayload: LoginPayload) => {
     const query = `
-        SELECT login
+        SELECT  user_id, login, email, password
         FROM users
-        WHERE login = $1 and password = $2 LIMIT 1
+        WHERE login = $1 LIMIT 1
     `;
-    
-    const values = [loginPayload.login, loginPayload.password];
+    const values = [loginPayload.login];
         
     try {
-        const user = await pool.query(query, values);
-        if (user?.rowCount) {
-            const jwt = await signJWT(loginPayload.login, config.secret)
-            return jwt
+        const result  = await pool.query(query, values);
+          if (result.rows.length === 0) {
+            throw new Error('User not found');
+        }
+        const user = result.rows[0]
+        const passwordCorrect =  await compare(loginPayload.password, user.password)
+        if (!passwordCorrect) {
+             throw new Error('wrong password'); 
+        }
+        const jwt = await signJWT(loginPayload.login, config.secret)
+        return {
+            message: 'User login successfully',
+            success: true,
+            token: jwt,
+            user: { login: loginPayload.login }
         }
     } catch (error) {
-        console.error('❌ Error during signup:', error);
+        console.error('❌ Error during login:', error);
         throw error;
     }
 }
