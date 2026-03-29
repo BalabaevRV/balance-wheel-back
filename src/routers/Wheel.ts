@@ -1,5 +1,5 @@
 import { authGuard, authMiddleware } from '@/middleware/AuthMiddleware'
-import { createWheel, editWheel, deleteWheel } from '@/controllers/WheelController1'
+import { createWheel, editWheel, deleteWheel } from '@/controllers/WheelController'
 
 const express = require('express')
 const router = express.Router()

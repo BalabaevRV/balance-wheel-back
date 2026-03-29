@@ -1,5 +1,5 @@
-import authRouter from '@/routers/auth'
-import userRouter from '@/routers/user'
+import authRouter from '@/routers/Auth'
+import userRouter from '@/routers/User'
 
 
 const express = require('express')
