@@ -47,17 +47,17 @@ export const userLogin = async (loginPayload: LoginPayload) => {
         WHERE login = $1 LIMIT 1
     `;
     const values = [loginPayload.login];
-        
-    try {
-        const result  = await pool.query(query, values);
-          if (result.rows.length === 0) {
+    const result  = await pool.query(query, values);
+        if (result.rows.length === 0) {
             throw new Error('User not found');
         }
-        const user = result.rows[0]
-        const passwordCorrect =  await compare(loginPayload.password, user.password)
-        if (!passwordCorrect) {
-             throw new Error('wrong password'); 
-        }
+    const user = result.rows[0]
+    const passwordCorrect =  await compare(loginPayload.password, user.password)
+    if (!passwordCorrect) {
+            throw new Error('wrong password'); 
+    }
+        
+    try {
         const jwt = await signJWT(loginPayload.login, user.user_id, config.secret)
         return {
             message: 'User login successfully',

@@ -1,7 +1,7 @@
 import request from 'supertest'
 import app from '@/app'
 import { pool } from '@/config/DatabasePool'
-import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
+import { afterAll, describe, expect, test } from '@jest/globals';
 
 describe('Auth routes Integration Tests', () => {
     const userData = {
@@ -10,24 +10,7 @@ describe('Auth routes Integration Tests', () => {
           email: 'john@example.com',
           password: 'SecurePass123!'
     };
-
-    beforeAll(async () => {
-      try {
-        // Удаляем созданного пользователя
-        if (createdUserId) {
-          await pool.query('DELETE FROM users WHERE user_id = $1', [createdUserId]);
-          console.log(`✅ Test user ${createdUserId} deleted`);
-        }
-        
-        console.log('✅ Test data cleaned up');
-        
-      } catch (error) {
-        console.error('❌ Cleanup error:', error);
-      }
-    });
-
-
-    let createdUserId: number;
+    let createdUserId: number
     describe('POST /api/signup', () => {
       test('should create new user successfully', async () => {
         const response = await request(app)
@@ -95,4 +78,10 @@ describe('Auth routes Integration Tests', () => {
       expect(response.body.error).toBeDefined();
     });
   }); 
+      afterAll(async () => {
+          await pool.query('DELETE FROM users WHERE login = $1', [userData.login]);
+          console.log(`✅ Test user deleted`);        
+          console.log('✅ Test data cleaned up');   
+    });
+
 })
