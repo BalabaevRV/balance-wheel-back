@@ -1,4 +1,4 @@
-import { getUserInfo } from '@/controllers/user'
+import { getUserInfo } from '@/controllers/userController'
 import { authGuard, authMiddleware } from '@/middleware/AuthMiddleware'
 
 const express = require('express')

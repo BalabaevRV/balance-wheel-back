@@ -2,7 +2,8 @@ import { Request, Response } from 'express'
 import { deleteCurrentUser, getUserInfoById } from '@/models/UserModel'
 
 export const deleteUser = async(req: Request, res: Response) => {
-    await deleteCurrentUser({login: req.user})
+    //TODO
+    //нужно ли
 }
 
 export const getUserInfo = async(req: Request, res: Response) => {

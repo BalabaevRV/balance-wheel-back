@@ -1,4 +1,4 @@
-import { loginUser, logoutUser, signupUser } from '@/controllers/auth'
+import { loginUser, logoutUser, signupUser } from '@/controllers/authController'
 
 const express = require('express')
 const router = express.Router()
