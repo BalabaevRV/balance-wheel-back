@@ -16,6 +16,6 @@ export interface DeletePayload {
 }
 
 export type GetUserInfoPayload = 
-    | { login: string; id?: never }     
-    | { id: number; login?: never }; 
+    | { login: string; user_id?: never }     
+    | { user_id: number; login?: never }; 
 

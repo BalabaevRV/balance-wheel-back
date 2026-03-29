@@ -14,7 +14,7 @@ export const loginUser = async (req: Request, res: Response)  => {
         }
         
         // Общая ошибка сервера
-        console.error('Signup error:', error);
+        console.error('Login error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }

@@ -1,23 +1,36 @@
 import { Request, Response } from 'express'
-import { deleteCurrentUser, getUserInfoByName, getUserInfoById } from '@/models/UserModel'
+import { deleteCurrentUser, getUserInfoById } from '@/models/UserModel'
 
 export const deleteUser = async(req: Request, res: Response) => {
     await deleteCurrentUser({login: req.user})
 }
 
-
-export const getCurrentUserInfo = async(req: Request, res: Response) => {
-     const userInfo = await getUserInfoByName({login: req.user})
-     res.status(200).json({ 
-          user: userInfo
-     });
-}
-
-
 export const getUserInfo = async(req: Request, res: Response) => {
-    const userInfo = await getUserInfoById({id: Number(req.params.id)})
-     res.status(200).json({ 
-          user: userInfo
-     });
+    try {
+        const userId = Number(req.params.id) || Number(req.user)
+        if (!userId || isNaN(userId)) {
+            return res.status(400).json({ 
+                error: 'Invalid user ID' 
+            });
+        }
+        
+        const userInfo = await getUserInfoById({user_id: userId})
+
+        if (!userInfo) {
+            return res.status(404).json({ 
+                error: 'User not found' 
+            });
+        }
+
+        res.status(200).json({ 
+            user: userInfo
+        });
+    } catch(error) {
+        if (error instanceof Error) {
+            return res.status(404).json({ error: error.message });
+        }
+        console.error('Login error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 }
 

@@ -4,15 +4,17 @@ import { config } from '@/config/env';
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
     if (req.headers.authorization) {
-        verify(req.headers.authorization.split('')[1], config.secret, (err, payload) => {
+        verify(req.headers.authorization.split(' ')[1], config.secret, (err, payload) => {
             if (err) {
                 next()
             } else if (payload && typeof payload === 'object' && 'login' in payload) {
-                req.user = payload.login;
+                req.user = payload.user_id;
                 next();
             }
         }) 
-    }            
+    } else {
+        next()
+    }           
 }
 
 

@@ -1,5 +1,5 @@
-import { createAllTables } from './models/CreateTables'
 import authRouter from '@/routers/auth'
+import userRouter from '@/routers/user'
 
 
 const express = require('express')
@@ -15,6 +15,7 @@ app.get('/', (req: any, res: any) => {
 })
 
 app.use(authRouter)
+app.use(userRouter)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

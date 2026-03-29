@@ -25,8 +25,8 @@ export const userSignup = async (signupPayload: SignupPayload)  => {
     try {
         const passwordHash = await hash(password, config.salt)
         const values = [name, login, email, passwordHash];
-        await pool.query(query, values);
-        const jwt = await signJWT(login, config.secret)
+        const result = await pool.query(query, values);
+        const jwt = await signJWT(login, result.rows[0].user_id, config.secret)
         console.log('✅ user was signup');
         return { 
         message: 'User created successfully',
@@ -58,7 +58,7 @@ export const userLogin = async (loginPayload: LoginPayload) => {
         if (!passwordCorrect) {
              throw new Error('wrong password'); 
         }
-        const jwt = await signJWT(loginPayload.login, config.secret)
+        const jwt = await signJWT(loginPayload.login, user.user_id, config.secret)
         return {
             message: 'User login successfully',
             success: true,
@@ -94,34 +94,19 @@ export const deleteCurrentUser = async (deletePayload: DeletePayload) => {
     }
 }   
 
-export const getUserInfoByName =  async(getUserInfoPayload: GetUserInfoPayload) => {
-       const query = `
-        SELECT user_id, name 
-        FROM users
-        WHERE login = $1 LIMIT 1
-    `;
-    
-    const values = [getUserInfoPayload.login];
-    try {
-        const user = await pool.query(query, values);
-        return user
-    } catch (error) {
-        console.error('❌ Error during get info:', error);
-        throw error;
-    }
-}
-
 export const getUserInfoById = async(getUserInfoPayload: GetUserInfoPayload) => {
        const query = `
-        SELECT user_id, name 
+        SELECT user_id, name
         FROM users
-        WHERE id = $1 LIMIT 1
+        WHERE user_id = $1 LIMIT 1
     `;
-    
-    const values = [getUserInfoPayload.id];
+    const values = [getUserInfoPayload.user_id];
     try {
         const user = await pool.query(query, values);
-        return user
+        if(user.rowCount === 0) {
+            throw new Error ('User info not founded')
+        }
+        return user.rows[0]
     } catch (error) {
         console.error('❌ Error during get info:', error);
         throw error;
@@ -129,9 +114,9 @@ export const getUserInfoById = async(getUserInfoPayload: GetUserInfoPayload) => 
 }
 
 
-const signJWT = (login: string, secret: string): Promise<string> => {
+const signJWT = (login: string, user_id: number, secret: string): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
-        sign({login, iat: Math.floor(Date.now() / 1000)}, secret, {algorithm: 'HS256'}, (err, token) => {
+        sign({login, user_id, iat: Math.floor(Date.now() / 1000)}, secret, {algorithm: 'HS256'}, (err, token) => {
             if (err) {
                 reject(err)
             }
