@@ -1,5 +1,6 @@
 import authRouter from '@/routers/Auth'
 import userRouter from '@/routers/User'
+import wheelRouter from '@/routers/Wheel'
 
 
 const express = require('express')
@@ -16,6 +17,7 @@ app.get('/', (req: any, res: any) => {
 
 app.use(authRouter)
 app.use(userRouter)
+app.use(wheelRouter)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
