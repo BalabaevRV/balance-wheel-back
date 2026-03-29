@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import { authGuard, authMiddleware } from '@/middleware/AuthMiddleware'
 import { getWheelsList, getWheelFromDb, createWheelInDb, deleteWheelFromDb, editWheelById } from '@/models/WheelModel'
 
 const express = require('express')
