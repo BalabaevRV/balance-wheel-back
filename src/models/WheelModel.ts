@@ -1,13 +1,21 @@
 import { pool } from '@/config/DatabasePool'
 
-export const createWheel = () => {
+export const getWheelsList = () => {
 
 }
 
-export const editWheel = () => {
+export const getWheelFromDb = () => {
+
+}
+
+export const createWheelInDb = () => {
+
+}
+
+export const deleteWheelFromDb = () => {
     
 }
 
-export const deleteWheel = () => {
+export const editWheelById = () => {
     
 }
