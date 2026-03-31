@@ -1,9 +1,6 @@
 import request from 'supertest'
 import app from '@/app'
-import { pool } from '@/config/DatabasePool'
 import { beforeAll, describe, expect, test } from '@jest/globals';
-import { hash } from 'bcryptjs';
-import { config } from '@/config/env';
 import { getAuthToken } from '@/helpers/tests/Auth' 
 import { TestUser } from '@/types/tests'
 
