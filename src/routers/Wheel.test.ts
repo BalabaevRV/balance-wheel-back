@@ -53,6 +53,7 @@ import { Field, Wheel } from '@/types'
                 wheel: wheelItemFirst,
                 fields: FieldsArrayFirst
             })
+
             wheelItemFirst.wheel_id = response.body.data.wheel.wheel_id
             const dbResultWheel = await pool.query(
                 'SELECT * FROM wheels WHERE name = $1',
@@ -76,9 +77,33 @@ import { Field, Wheel } from '@/types'
             expect(dbResultUser.rows).toHaveLength(1);
         })
     })
-    // describe('POST /wheel/:id', () => {
-    //     test('should get wheel list', async () => {})
-    // })
+    describe('POST /wheel/:id', () => {
+        test('should edit wheel by id', async () => {
+            wheelItemFirst.name = 'wheelTest1Edit'
+            FieldsArrayFirst[0] = { name: 'Cyan', color_hex: '#00FFFF' }
+            const response = await request(app)
+                .post(`/wheel/${wheelItemFirst.wheel_id}`)
+                .set('Authorization', `Bearer ${currentUser.authToken}`)
+                .send({wheel: wheelItemFirst, fields: FieldsArrayFirst})
+                .expect(200);
+
+            expect(response.body).toHaveProperty('success', true);
+            expect(response.body.data.fields).toEqual(
+                expect.arrayContaining(
+                    FieldsArrayFirst.map(expected => 
+                        expect.objectContaining({
+                            name: expected.name,
+                            color_hex: expected.color_hex
+                        })
+                    )
+                )
+            );
+
+            expect(response.body.data).toMatchObject({
+                wheel: wheelItemFirst
+            })         
+        })
+    })
     // describe('GET /wheel', () => {
     //     test('should get wheel list', async () => {
     //         const response = await request(app)
@@ -87,9 +112,30 @@ import { Field, Wheel } from '@/types'
     //         .expect(200);
     //     })
     // })
-    // describe('GET /wheel/:id', () => {
-    //     test('should get wheel list', async () => {})
-    // })
+    describe('GET /wheel/:id', () => {
+         test('should get wheel by id', async () => {
+            const response = await request(app)
+                    .get(`/wheel/${wheelItemFirst.wheel_id}`)
+                    .set('Authorization', `Bearer ${currentUser.authToken}`)
+                    .expect(200);
+
+            expect(response.body).toHaveProperty('success', true);
+            expect(response.body.data.fields).toEqual(
+                expect.arrayContaining(
+                    FieldsArrayFirst.map(expected => 
+                        expect.objectContaining({
+                            name: expected.name,
+                            color_hex: expected.color_hex
+                        })
+                    )
+                )
+            );
+
+            expect(response.body.data).toMatchObject({
+                wheel: wheelItemFirst
+            })   
+         })
+    })
     // describe('DELETE /wheel', () => {
     //     test('should get wheel list', async () => {})
     // })
