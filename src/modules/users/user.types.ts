@@ -4,7 +4,7 @@ export type GetUserInfoPayload =
     | { user_id: number; login?: never }
 
 
-    export interface TestUser {
+export interface TestUser {
     name: string,
     login: string,
     email: string,
