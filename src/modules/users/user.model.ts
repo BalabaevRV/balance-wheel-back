@@ -1,5 +1,6 @@
-import { pool } from '@/config/DatabasePool'
-import { SignupPayload, LoginPayload, DeletePayload, GetUserInfoPayload } from '@/types'
+import { pool } from '@/config/database'
+import { SignupPayload, LoginPayload, DeletePayload } from '@/modules/users/auth.types'
+import { GetUserInfoPayload } from '@/modules/users/user.types'
 import { config } from '@/config/env'
 import { sign } from 'jsonwebtoken'
 import { hash, compare } from 'bcryptjs'

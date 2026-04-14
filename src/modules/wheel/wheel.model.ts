@@ -1,6 +1,6 @@
-import { pool } from '@/config/DatabasePool'
-import { CreateWheelPayload } from '@/types/index'
-import { createFieldsFromArrary, updateFieldsWheelConnection, getFieldsByWheelId } from '@/models/FieldModel'
+import { pool } from '@/config/database'
+import { CreateWheelPayload } from '@/modules/wheel/wheel.types'
+import { createFieldsFromArrary, updateFieldsWheelConnection, getFieldsByWheelId } from '@/modules/wheel/field.model'
 
 export const getWheelsList = async () => {
 

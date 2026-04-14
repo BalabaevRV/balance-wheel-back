@@ -1,9 +1,9 @@
 import request from 'supertest'
 import app from '@/app'
-import { pool } from '@/config/DatabasePool'
+import { pool } from '@/config/database'
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals'
 import { TestUser } from '@/types/tests'
-import { getAuthToken } from '@/helpers/tests/Auth' 
+import { getAuthToken } from '@/tests/helper/auth' 
 import { Field, Wheel } from '@/types'
 
 

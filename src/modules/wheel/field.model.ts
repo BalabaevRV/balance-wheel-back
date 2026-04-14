@@ -1,5 +1,5 @@
-import { Field } from '@/types/index'
-import { pool } from '@/config/DatabasePool'
+import { Field } from '@/modules/wheel/field.types'
+import { pool } from '@/config/database'
 
 export const createFieldsFromArrary = async (fields: Field[], wheelId?: number): Promise<Field[]> => {
    for (const field of fields) {

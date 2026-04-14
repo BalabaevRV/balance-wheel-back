@@ -1,6 +1,6 @@
-import authRouter from '@/routers/Auth'
-import userRouter from '@/routers/User'
-import wheelRouter from '@/routers/Wheel'
+import authRouter from '@/modules/users/auth.router'
+import userRouter from '@/modules/users/user.router'
+import wheelRouter from '@/modules/wheel/wheel.router'
 
 
 const express = require('express')

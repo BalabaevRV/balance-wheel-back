@@ -1,5 +1,5 @@
-import { getUserInfo } from '@/controllers/UserController'
-import { authGuard, authMiddleware } from '@/middleware/AuthMiddleware'
+import { getUserInfo } from '@/modules/users/user.controller'
+import { authGuard, authMiddleware } from '@/shared/middleware/auth.middleware'
 
 const express = require('express')
 const router = express.Router()

@@ -1,9 +1,9 @@
-import { pool } from '@/config/DatabasePool';
+import { pool } from '@/config/database';
 
 export async function createUsersTable() {
   const query = `
     CREATE TABLE IF NOT EXISTS users (
-       user_id SERIAL PRIMARY KEY,
+      user_id SERIAL PRIMARY KEY,
       name VARCHAR(100) NOT NULL,
       login VARCHAR(100) NOT NULL,
       email VARCHAR(255) UNIQUE NOT NULL,

@@ -1,6 +1,6 @@
 import request from 'supertest'
 import app from '@/app'
-import { pool } from '@/config/DatabasePool'
+import { pool } from '@/config/database'
 import { afterAll, describe, expect, test } from '@jest/globals';
 
 describe('Auth routes Integration Tests', () => {
