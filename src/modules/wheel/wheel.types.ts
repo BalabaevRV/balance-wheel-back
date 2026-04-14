@@ -1,13 +1,10 @@
 
-import { Field } from "@/modules/wheel/field.types";
+import { IField } from "@/modules/wheel/field.types";
 
-export interface Wheel {
-	wheel_id?: number,
-	name: string,
-	intervalSeconds: number
-}	
-
-export interface CreateWheelPayload {
-    wheel: Wheel,
-    fields: Field[]
+export interface IWheel {
+    wheel_id: number;
+    owner_id: number;
+    name: string;
+    interval_seconds: number;
+    fields: IField[];
 }

@@ -1,6 +1,5 @@
-
-export interface Field {
-	field_id?: number,
-	name: string,
-	color_hex: string
+export interface IField {
+    field_id: number;
+    name: string;
+    color_hex: string;
 }

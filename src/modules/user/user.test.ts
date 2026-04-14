@@ -2,7 +2,7 @@ import request from 'supertest'
 import app from '@/app'
 import { beforeAll, describe, expect, test } from '@jest/globals';
 import { getAuthToken } from '@/tests/helper/auth' 
-import { TestUser } from '@/modules/users/user.types'
+import { TestUser } from '@/modules/user/user.types'
 
 describe('User routes Integration Tests', () => {
     let currentUser: TestUser 

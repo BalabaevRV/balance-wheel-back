@@ -1,5 +1,5 @@
-import authRouter from '@/modules/users/auth.router'
-import userRouter from '@/modules/users/user.router'
+import authRouter from '@/modules/user/auth.router'
+import userRouter from '@/modules/user/user.router'
 import wheelRouter from '@/modules/wheel/wheel.router'
 
 

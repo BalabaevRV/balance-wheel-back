@@ -3,7 +3,7 @@ import request from 'supertest'
 import { pool } from '@/config/database'
 import { hash } from 'bcryptjs';
 import { config } from '@/config/env'
-import { TestUser } from '@/modules/users/user.types'
+import { TestUser } from '@/modules/user/user.types'
 
 let userId: number
 const userData:TestUser = {
