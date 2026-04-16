@@ -5,6 +5,8 @@ import { hash, compare } from 'bcryptjs'
 import { findUserByLogin, createUser } from '@/modules/user/user.model'
 import { ApiResponse } from '@/shared/types/api.types'
 import { IUserToken } from './user.types'
+import { IWheel } from '@/modules/wheel/wheel.types'
+import { IRecord } from '@/modules/record/record.types'
 
 
 export const userSignup = async (signupPayload: SignupPayload): Promise<ApiResponse<IUserToken>> => {
@@ -48,8 +50,8 @@ export const userLogin = async (loginPayload: LoginPayload): Promise<ApiResponse
 
     try {
         const jwt = await signJWT(loginPayload.login, user.user_id, config.secret)
-        const currentUserWheels = [];
-        const currentUserRecords = [];
+        const currentUserWheels:IWheel[] = [];
+        const currentUserRecords:IRecord[] = [];
         return {
             message: 'User login successfully',
             success: true,
