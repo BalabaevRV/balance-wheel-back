@@ -8,3 +8,7 @@ export interface IWheel {
     interval_seconds: number;
     fields: IField[];
 }
+
+export interface CreateWheelPayload {
+    fields: IField[];
+}
