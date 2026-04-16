@@ -8,6 +8,7 @@ import { IUserToken } from './user.types'
 import { IWheel } from '@/modules/wheel/wheel.types'
 import { IRecord } from '@/modules/record/record.types'
 import { getWheelsByUserId } from '../wheel/wheel.service'
+import { getRecordsByUserId } from '../record/record.service'
 
 
 export const userSignup = async (signupPayload: SignupPayload): Promise<ApiResponse<IUserToken>> => {
@@ -51,15 +52,14 @@ export const userLogin = async (loginPayload: LoginPayload): Promise<ApiResponse
     try {
         const jwt = await signJWT(loginPayload.login, existingUser.user_id, config.secret)
         const currentUserWheels:IWheel[] = await getWheelsByUserId(existingUser.user_id, 10);
-        const currentUserRecords:IRecord[] = []
+        const currentUserRecords:IRecord[] = await getRecordsByUserId(existingUser.user_id, 10);
         console.log('✅ user was login');
-                console.log('✅ user was signup');
         return { 
-            message: 'User created successfully',
+            message: 'User login successfully',
             success: true,
             data: {
                 token: jwt,
-                user: { user_id: existingUser.user_id, login: existingUser.login, name: existingUser.name, email: existingUser.email, wheels: currentUserWheels, records: [] }
+                user: { user_id: existingUser.user_id, login: existingUser.login, name: existingUser.name, email: existingUser.email, wheels: currentUserWheels, records: currentUserRecords }
             }
         }
 
