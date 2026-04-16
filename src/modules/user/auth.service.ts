@@ -7,6 +7,7 @@ import { ApiResponse } from '@/shared/types/api.types'
 import { IUserToken } from './user.types'
 import { IWheel } from '@/modules/wheel/wheel.types'
 import { IRecord } from '@/modules/record/record.types'
+import { getWheelsByUserId } from '../wheel/wheel.service'
 
 
 export const userSignup = async (signupPayload: SignupPayload): Promise<ApiResponse<IUserToken>> => {
@@ -20,15 +21,15 @@ export const userSignup = async (signupPayload: SignupPayload): Promise<ApiRespo
 
     try {
         const passwordHash = await hash(password, config.salt)
-        const result = await createUser(name, login, email, passwordHash);
-        const jwt = await signJWT(login, result.rows[0].user_id, config.secret)
+        const newUser = await createUser(name, login, email, passwordHash);
+        const jwt = await signJWT(login, newUser.user_id, config.secret)
         console.log('✅ user was signup');
         return { 
             message: 'User created successfully',
             success: true,
             data: {
                 token: jwt,
-                user: { user_id: result.rows[0].user_id, login, name, email, wheels: [], records: [] }
+                user: { user_id: newUser.user_id, login, name, email, wheels: [], records: [] }
             }
         }
     } catch (error) {
@@ -42,24 +43,26 @@ export const userLogin = async (loginPayload: LoginPayload): Promise<ApiResponse
     if (!existingUser) {
         throw new Error('User not found');
     }
-    const user = existingUser.rows[0];
-    const passwordCorrect =  await compare(loginPayload.password, user.password)
+    const passwordCorrect =  await compare(loginPayload.password, existingUser.password)
     if (!passwordCorrect) {
             throw new Error('wrong password'); 
     }
 
     try {
-        const jwt = await signJWT(loginPayload.login, user.user_id, config.secret)
-        const currentUserWheels:IWheel[] = [];
-        const currentUserRecords:IRecord[] = [];
-        return {
-            message: 'User login successfully',
+        const jwt = await signJWT(loginPayload.login, existingUser.user_id, config.secret)
+        const currentUserWheels:IWheel[] = await getWheelsByUserId(existingUser.user_id, 10);
+        const currentUserRecords:IRecord[] = []
+        console.log('✅ user was login');
+                console.log('✅ user was signup');
+        return { 
+            message: 'User created successfully',
             success: true,
             data: {
                 token: jwt,
-                user: { user_id: user.user_id, login: loginPayload.login, name: user.name, email: user.email, wheels: currentUserWheels, records: currentUserRecords }
+                user: { user_id: existingUser.user_id, login: existingUser.login, name: existingUser.name, email: existingUser.email, wheels: currentUserWheels, records: [] }
             }
         }
+
     } catch (error) {
         console.error('❌ Error during login:', error);
         throw error;

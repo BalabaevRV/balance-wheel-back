@@ -4,13 +4,8 @@ import { userSignup, userLogin } from '@/modules/user/auth.service'
 export const loginUser = async (req: Request, res: Response)  => {
     try {
         const result = await userLogin(req.body);
-        res.status(200).json({
-          success: true,
-          data: result,
-          message: 'Profile retrieved successfully'
-        });
+        res.status(200).json(result);
     } catch (error) {
-        // Проверяем тип ошибки
         if (error instanceof Error) {
         if (error.message === 'wrong password') {
             return res.status(401).json({ error: error.message });
@@ -42,8 +37,6 @@ export const signupUser = async (req: Request, res: Response) => {
         return res.status(400).json({ error: error.message });
       }
     }
-    
-    // Общая ошибка сервера
     console.error('Signup error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }

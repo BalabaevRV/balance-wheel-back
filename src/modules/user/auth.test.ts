@@ -1,7 +1,8 @@
 import request from 'supertest'
 import app from '@/app'
 import { pool } from '@/config/database'
-import { afterAll, describe, expect, test } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
+
 
 describe('Auth routes Integration Tests', () => {
     const userData = {
@@ -11,6 +12,9 @@ describe('Auth routes Integration Tests', () => {
           password: 'SecurePass123!'
     };
     let createdUserId: number
+    beforeAll(async () => {
+
+    })
     describe('POST /api/signup', () => {
       test('should create new user successfully', async () => {
         const response = await request(app)
@@ -19,13 +23,16 @@ describe('Auth routes Integration Tests', () => {
           .expect(201);
         
         expect(response.body).toHaveProperty('success', true);
-        expect(response.body).toHaveProperty('token');
-        expect(response.body.user).toMatchObject({
+        expect(response.body.data).toHaveProperty('token');
+        expect(response.body.data.user).toHaveProperty('user_id');
+        expect(response.body.data.user).toHaveProperty('records');
+        expect(response.body.data.user).toHaveProperty('wheels');
+        expect(response.body.data.user).toMatchObject({
           name: userData.name,
-          login: userData.login,
+          login: userData.login
         });
         
-        createdUserId = response.body.user.id;
+        createdUserId = response.body.data.user.user_id;
 
         // Проверяем, что пользователь реально создан в БД
         const dbResult = await pool.query(
@@ -60,10 +67,15 @@ describe('Auth routes Integration Tests', () => {
           password: userData.password
         })
         .expect(200);
-      
-      expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('token');
-      expect(response.body.user).toHaveProperty('login', userData.login);
+        expect(response.body).toHaveProperty('success', true);
+        expect(response.body.data).toHaveProperty('token');
+        expect(response.body.data.user).toHaveProperty('user_id');
+        expect(response.body.data.user).toHaveProperty('records');
+        expect(response.body.data.user).toHaveProperty('wheels');
+        expect(response.body.data.user).toMatchObject({
+          name: userData.name,
+          login: userData.login
+        });
     });
     
     test('should return 401 with wrong password', async () => {
