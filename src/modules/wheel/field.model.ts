@@ -1,7 +1,7 @@
-import { Field } from '@/modules/wheel/field.types'
+import { IField } from '@/modules/wheel/field.types'
 import { pool } from '@/config/database'
 
-export const createFieldsFromArrary = async (fields: Field[], wheelId?: number): Promise<Field[]> => {
+export const createFieldsFromArrary = async (fields: IField[], wheelId?: number): Promise<IField[]> => {
    for (const field of fields) {
         const fieldId = await getExistFieldId(field)
         if (fieldId && typeof fieldId === 'number') {
@@ -23,7 +23,7 @@ export const createFieldsFromArrary = async (fields: Field[], wheelId?: number):
     return fields   
 }
 
-export const updateFieldsWheelConnection = async (fields: Field[], wheelId: number): Promise<Field[]> => {
+export const updateFieldsWheelConnection = async (fields: IField[], wheelId: number): Promise<IField[]> => {
     const currentFieldsResult = await pool.query(
         'SELECT field_id FROM wheels_fields WHERE wheel_id = $1',
         [wheelId]
@@ -62,7 +62,7 @@ export const updateFieldsWheelConnection = async (fields: Field[], wheelId: numb
     return fields
 }
 
-const getExistFieldId = async (field: Field): Promise<boolean | number> => {
+const getExistFieldId = async (field: IField): Promise<boolean | number> => {
     const result = await pool.query(
         'SELECT field_id FROM fields WHERE name = $1 and color_hex = $2 LIMIT 1',
         [field.name, field.color_hex]
