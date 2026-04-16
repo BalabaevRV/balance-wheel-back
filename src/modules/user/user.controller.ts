@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { deleteCurrentUser, getUserInfoById } from '@/models/UserModel'
+import { findUserById } from '@/modules/user/user.model'
 
 export const deleteUser = async(req: Request, res: Response) => {
     //TODO
@@ -15,7 +15,7 @@ export const getUserInfo = async(req: Request, res: Response) => {
             });
         }
         
-        const userInfo = await getUserInfoById({user_id: userId})
+        const userInfo = await findUserById(userId)
 
         if (!userInfo) {
             return res.status(404).json({ 
