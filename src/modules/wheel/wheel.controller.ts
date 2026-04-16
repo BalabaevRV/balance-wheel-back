@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getWheelFromDb, createWheelInDb, deleteWheelFromDb, editWheelById } from '@/modules/wheel/wheel.model'
+import { getWheelFromDb, createWheelInDb, editWheelById } from '@/modules/wheel/wheel.model'
 
 const express = require('express')
 const router = express.Router()
