@@ -13,9 +13,8 @@ import { getRecordsByUserId } from '../record/record.service'
 
 export const userSignup = async (signupPayload: SignupPayload): Promise<ApiResponse<IUserToken>> => {
     const { name, login, email, password } = signupPayload;
-    
-    // Проверяем, существует ли пользователь
     const existingUser = await findUserByLogin(login);
+    
     if (existingUser) {
         throw new Error('User already exists'); 
     }
