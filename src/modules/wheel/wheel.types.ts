@@ -5,10 +5,8 @@ export interface IWheel {
     wheel_id: number;
     owner_id: number;
     name: string;
-    interval_seconds: number;
+    interval_seconds?: number;
     fields: IField[];
 }
 
-export interface CreateWheelPayload {
-    fields: IField[];
-}
+export type IWheelSave = Omit<IWheel, 'wheel_id' | 'owner_id'> & Partial<IWheel>

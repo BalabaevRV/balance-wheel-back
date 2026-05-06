@@ -32,7 +32,6 @@ export const updateFieldsWheelConnection = async (fields: IField[], wheelId: num
     const newFieldIds: number[] = [];
 
     for (const field of fields) {
-        console.log(111)
         const fieldId = await getExistFieldId(field)
         if (fieldId && typeof fieldId === 'number') {
             field.field_id = fieldId

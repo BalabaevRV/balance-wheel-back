@@ -51,6 +51,5 @@ export const getRecordsByIdArray = async (recordIds: number[]) => {
     
     const values = [recordIds];
     const result = await pool.query(query, values);
-    console.log(result)
     return result.rows;
 }
