@@ -36,7 +36,11 @@ export const getWheelById = async (req: Request, res: Response) => {
 export const saveWheel = async (req: Request, res: Response) => {
   try {
     const result = await saveWheelInfo(req.body, Number(req.user));
-    res.status(200).json(result);
+    if (req.body.wheel_id) {
+        res.status(200).json(result);
+    } else {
+        res.status(201).json(result);
+    }
   } catch (error) {
     if (error instanceof Error) {
         return res.status(400).json({ error: error.message });

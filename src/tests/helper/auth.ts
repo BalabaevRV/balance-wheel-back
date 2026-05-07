@@ -17,6 +17,7 @@ const userData:TestUser = {
 
 export const getAuthToken = async ():Promise<typeof userData> => {
     const existingUser = await pool.query('SELECT user_id FROM users WHERE login = $1 LIMIT 1', [userData.login]);
+
     if (existingUser.rowCount === 0) {
         const passwordHash = await hash(userData.password, config.salt)
         const createUserResult = await pool.query('INSERT INTO users (name, login, email, password) VALUES ($1, $2, $3, $4) RETURNING user_id, name, login, email', [userData.name, userData.login, userData.email, passwordHash])
@@ -30,6 +31,6 @@ export const getAuthToken = async ():Promise<typeof userData> => {
             login: userData.login,
             password: userData.password
         });
-        userData.authToken = loginResponse.body.token;
+    userData.authToken = loginResponse.body.data.token;
     return userData;
 }

@@ -1,5 +1,7 @@
 export interface IField {
-    field_id: number;
+    field_id?: number;
     name: string;
     color_hex: string;
 }
+
+export type IFieldSave = Omit<IField, 'field_id'>
