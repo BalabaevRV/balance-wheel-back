@@ -265,9 +265,7 @@ export const createWheel = async (wheelData: IWheelSave, userId: number):Promise
         addWheelToUser(userId, wheelResult.rows[0].wheel_id, client)
 
         for (const field of wheelData.fields) {
-            const fieldId = await getExistingFieldId(field.name, field.color_hex) || await createNewField(field.name, field.color_hex);
-            console.log('wheelId:', wheelId);
-            console.log('fieldId:', fieldId);
+            const fieldId = await getExistingFieldId(field.name, field.color_hex) || await createNewField(field.name, field.color_hex)
             await createWheelFieldLink(wheelId, fieldId, client)    
         }
         await client.query('COMMIT');

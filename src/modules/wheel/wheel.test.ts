@@ -18,10 +18,23 @@ import { IField } from './field.types'
         { name: 'Purple', color_hex: '#800080' },
         { name: 'Orange', color_hex: '#FFA500' }
     ]
+    const FieldsArraySecond: IField[] = [
+        { name: 'Pink', color_hex: '#FFC0CB' },
+        { name: 'Cyan', color_hex: '#00FFFF' },
+        { name: 'Magenta', color_hex: '#FF00FF' },
+        { name: 'Lime', color_hex: '#00FF00' },
+        { name: 'Teal', color_hex: '#008080' },
+        { name: 'Navy', color_hex: '#000080' }
+    ]
     const wheelItemFirst: IWheelSave = {
         name: 'wheelTest1',
         interval_seconds: 86400,
         fields: FieldsArrayFirst 
+    }
+    const wheelItemSecond: IWheelSave = {
+        name: 'wheelTest2',
+        interval_seconds: 86400,
+        fields: FieldsArraySecond
     }
 
     const expectedFields = FieldsArrayFirst.map(field => 
@@ -43,8 +56,6 @@ import { IField } from './field.types'
                 .expect(201);
             
     
-            console.log(124356)
-            console.log(response.body.data)
             expect(response.body).toHaveProperty('success', true);
             expect(response.body.data).toMatchObject({
                 ...wheelItemFirst,
@@ -91,6 +102,7 @@ import { IField } from './field.types'
                 name: FieldsArrayFirst[0].name,
                 color_hex: FieldsArrayFirst[0].color_hex
             }))
+
             expect(response.body.data).toMatchObject({
                 name: wheelItemFirst.name,
                 interval_seconds: wheelItemFirst.interval_seconds,
@@ -98,14 +110,27 @@ import { IField } from './field.types'
             })
         })
     })
-    // describe('GET /wheel', () => {
-    //     test('should get wheel list', async () => {
-    //         const response = await request(app)
-    //         .get('/wheel')
-    //         .set('Authorization', `Bearer ${currentUser.authToken}`)
-    //         .expect(200);
-    //     })
-    // })
+    describe('GET /api/wheels', () => {
+        test('should get wheel list', async () => {
+            const secondWheel =  await pool.query('SELECT * FROM wheels WHERE name = $1', [wheelItemSecond.name]);
+            if (!secondWheel.rows.length) {
+                const responseWheel = await request(app)
+                    .post(`/api/wheels`)
+                    .set('Authorization', `Bearer ${currentUser.authToken}`)
+                    .send({...wheelItemSecond, fields: FieldsArraySecond})
+                    .expect(201);
+         
+            }
+
+            const response = await request(app)
+            .get('/api/wheels')
+            .set('Authorization', `Bearer ${currentUser.authToken}`)
+            .expect(200);
+            
+            expect(response.body).toHaveProperty('success', true);
+            expect(response.body.data.length).toBeGreaterThan(0);
+        })
+    })
     describe('GET /api/wheels/:id', () => {
          test('should get wheel by id', async () => {
             const response = await request(app)

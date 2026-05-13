@@ -7,5 +7,7 @@ const router = express.Router()
 router.get('/api/wheels', authMiddleware, authGuard,  getWheels)
 router.get('/api/wheels/:id', authMiddleware, authGuard,  getWheelById)
 router.post('/api/wheels', authMiddleware, authGuard,  saveWheel)
+router.post('/api/wheels', authMiddleware, authGuard,  saveWheel)
+
 
 export default router
