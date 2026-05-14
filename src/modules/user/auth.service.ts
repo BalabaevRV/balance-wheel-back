@@ -11,7 +11,7 @@ import { getWheelsByUserId } from '../wheel/wheel.service'
 import { getRecordsByUserId } from '../record/record.service'
 
 
-export const userSignup = async (signupPayload: SignupPayload): Promise<ApiResponse<IUserToken>> => {
+export const userSignup = async (signupPayload: SignupPayload): Promise<IUserToken> => {
     const { name, login, email, password } = signupPayload;
     const existingUser = await findUserByLogin(login);
     
@@ -23,14 +23,9 @@ export const userSignup = async (signupPayload: SignupPayload): Promise<ApiRespo
         const passwordHash = await hash(password, config.salt)
         const newUser = await createUser(name, login, email, passwordHash);
         const jwt = await signJWT(login, newUser.user_id, config.secret)
-        console.log('✅ user was signup');
-        return { 
-            message: 'User created successfully',
-            success: true,
-            data: {
-                token: jwt,
-                user: { user_id: newUser.user_id, login, name, email, wheels: [], records: [] }
-            }
+        return {
+            token: jwt,
+            user: { user_id: newUser.user_id, login, name, email, wheels: [], records: [] }
         }
     } catch (error) {
         console.error('❌ Error during signup:', error);
@@ -38,7 +33,7 @@ export const userSignup = async (signupPayload: SignupPayload): Promise<ApiRespo
     }
 } 
 
-export const userLogin = async (loginPayload: LoginPayload): Promise<ApiResponse<IUserToken>> => {
+export const userLogin = async (loginPayload: LoginPayload): Promise<IUserToken> => {
     const existingUser = await findUserByLogin(loginPayload.login);
     if (!existingUser) {
         throw new Error('User not found');
@@ -52,16 +47,10 @@ export const userLogin = async (loginPayload: LoginPayload): Promise<ApiResponse
         const jwt = await signJWT(loginPayload.login, existingUser.user_id, config.secret)
         const currentUserWheels:IWheel[] = await getWheelsByUserId(existingUser.user_id, 10);
         const currentUserRecords:IRecord[] = await getRecordsByUserId(existingUser.user_id, 10);
-        console.log('✅ user was login');
         return { 
-            message: 'User login successfully',
-            success: true,
-            data: {
-                token: jwt,
-                user: { user_id: existingUser.user_id, login: existingUser.login, name: existingUser.name, email: existingUser.email, wheels: currentUserWheels, records: currentUserRecords }
-            }
+            token: jwt,
+            user: { user_id: existingUser.user_id, login: existingUser.login, name: existingUser.name, email: existingUser.email, wheels: currentUserWheels, records: currentUserRecords }
         }
-
     } catch (error) {
         console.error('❌ Error during login:', error);
         throw error;

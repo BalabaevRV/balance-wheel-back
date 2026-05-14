@@ -15,9 +15,13 @@ export const getUserInfo = async(req: Request, res: Response) => {
                 error: 'Invalid user ID' 
             });
         }
-
-        const result = await getUserInfoById(userId);
-        res.status(201).json(result);
+        const userInfo = await getUserInfoById(userId);
+        const answer = { 
+            message: 'User info got successfully',
+            success: true,
+            data: userInfo
+        }
+        res.status(200).json(answer);
       } catch (error) {
         // Проверяем тип ошибки
         if (error instanceof Error) {

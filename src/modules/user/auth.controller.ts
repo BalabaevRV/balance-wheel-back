@@ -3,8 +3,13 @@ import { userSignup, userLogin } from '@/modules/user/auth.service'
 
 export const loginUser = async (req: Request, res: Response)  => {
     try {
-        const result = await userLogin(req.body);
-        res.status(200).json(result);
+        const user = await userLogin(req.body);
+        const answer = {
+          message: 'User login successfully',
+          success: true,
+          data: user
+        }
+    res.status(200).json(answer);
     } catch (error) {
         if (error instanceof Error) {
         if (error.message === 'wrong password') {
@@ -28,8 +33,13 @@ export const logoutUser = async () => {
 
 export const signupUser = async (req: Request, res: Response) => {
   try {
-    const result = await userSignup(req.body);
-    res.status(201).json(result);
+    const user = await userSignup(req.body);
+    const answer = {
+      message: 'User created successfully',
+      success: true,
+      data: user
+    }
+    res.status(201).json(answer);
   } catch (error) {
     // Проверяем тип ошибки
     if (error instanceof Error) {
