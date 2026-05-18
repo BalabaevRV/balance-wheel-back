@@ -2,7 +2,7 @@ import { pool } from '@/config/database'
 import { IWheel, IWheelSave } from './wheel.types';
 import { PoolClient } from 'pg';
 
-export const getWheelsIdArrayByUser = async (userId: number, limit: number = 10) => {
+export const getWheelsIdArrayByUser = async (userId: number, limit?: number) => {
     let query:string = `
         SELECT wheel_id
         FROM users_wheels

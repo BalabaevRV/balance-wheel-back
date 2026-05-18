@@ -4,10 +4,15 @@ import { ApiResponse } from '@/shared/types/api.types'
 import { IUser } from '@/modules/user/user.types';
 import { getUserInfoById } from '@/modules/user/user.service';
 
-export const getWheelsByUserId = async (userId: number, limit: number = 10):Promise<IWheel[]> => {
-  const wheelsId:number[] = await getWheelsIdArrayByUser(userId, limit);
-  const wheels:IWheel[] = await getWheelsByIdArray(wheelsId);
-  return wheels;
+export const getWheelsByUserId = async (userId: number, limit?: number):Promise<IWheel[]> => {
+  try {
+    const wheelsId:number[] = await getWheelsIdArrayByUser(userId, limit);
+    const wheels:IWheel[] = await getWheelsByIdArray(wheelsId);
+    return wheels;
+  } catch (error) {
+      console.error('❌ Error during get wheels by user id:', error);
+      throw error;
+  }
 }
 
 export const saveWheelInfo = async (wheelData: IWheelSave, userId: number):Promise<IWheel> => {

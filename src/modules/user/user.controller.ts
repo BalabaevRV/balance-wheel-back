@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { getUserInfoById } from '@/modules/user/user.service'
 import { findUserById } from '@/modules/user/user.model'
+import { getWheelsByUserId } from '../wheel/wheel.service'
 
 export const deleteUser = async(req: Request, res: Response) => {
     //TODO
@@ -34,3 +35,24 @@ export const getUserInfo = async(req: Request, res: Response) => {
       }
 }
 
+export const getWheelsByUser = async(req: Request, res: Response) => {
+    try {
+        const userId = Number(req.params.id) || Number(req.user)
+        const wheels = await getWheelsByUserId(userId);
+        const answer = { 
+            message: 'Wheels got successfully',
+            success: true,
+            data: wheels
+        }
+        res.status(200).json(answer);
+      } catch (error) {
+        // Проверяем тип ошибки
+        if (error instanceof Error) {
+          if (error.message === 'Failed to retrieve user wheels') {
+            return res.status(400).json({ error: error.message });
+          }
+        }
+        console.error('Signup error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+}
