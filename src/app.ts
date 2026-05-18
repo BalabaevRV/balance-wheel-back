@@ -15,9 +15,9 @@ app.get('/', (req: any, res: any) => {
   res.send('Hello World!')
 })
 
-app.use(authRouter)
-app.use(userRouter)
-app.use(wheelRouter)
+app.use('/api', authRouter)
+app.use('/api', userRouter)
+app.use('/api',wheelRouter)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
