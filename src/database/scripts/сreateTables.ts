@@ -67,6 +67,8 @@ export async function createUsersWheelsTable() {
     CREATE TABLE IF NOT EXISTS users_wheels (
       user_id INTEGER NOT NULL,
       wheel_id INTEGER NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       PRIMARY KEY (user_id, wheel_id),
       FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
       FOREIGN KEY (wheel_id) REFERENCES wheels(wheel_id) ON DELETE CASCADE

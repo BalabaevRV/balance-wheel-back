@@ -7,6 +7,7 @@ export const getWheelsIdArrayByUser = async (userId: number, limit: number = 10)
         SELECT wheel_id
         FROM users_wheels
         WHERE user_id = $1
+        ORDER BY created_at DESC
     `;
     const values = [userId];
     if (limit && limit > 0) {
@@ -100,7 +101,7 @@ export const createWheelInDb = async (wheelIds: number[], d: number) => {
 }
 
 
-export const getWheels = async () => {    
+export const getWheelsList = async () => {    
     const query = `
     SELECT 
         w.*,
@@ -284,6 +285,16 @@ export const addWheelToUser = async (userId: number, wheelId: number, client?: P
     const query = `
                 INSERT INTO users_wheels (user_id, wheel_id) 
                 VALUES ($1, $2)
+            `
+    const values = [userId, wheelId]
+    await db.query(query, values)
+}
+
+export const removeWheelFromUser = async (userId: number, wheelId: number, client?: PoolClient) => {       
+    const db = client || pool;
+    const query = `
+                DELETE FROM users_wheels 
+                WHERE user_id = $1 AND wheel_id = $2
             `
     const values = [userId, wheelId]
     await db.query(query, values)

@@ -4,12 +4,13 @@ import { pool } from '@/config/database'
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals'
 import { TestUser } from '@/modules/user/user.types'
 import { getAuthToken } from '@/tests/helper/auth' 
-import { IWheelSave } from './wheel.types'
+import { IWheel, IWheelSave } from './wheel.types'
 import { IField } from './field.types'
 
 
  describe('User routes Integration Tests', () => {
     let currentUser: TestUser 
+    let newWheelId: number | undefined 
     const FieldsArrayFirst: IField[] = [
         { name: 'Red', color_hex: '#FF0000' },
         { name: 'Green', color_hex: '#00FF00' },
@@ -145,6 +146,67 @@ import { IField } from './field.types'
                 fields:  expectedFields
             }) 
          })
+    })
+    describe('POST /api/wheels/:wheelId/attach', () => {
+        test('should attach wheel to user', async () => {
+            const result = await pool.query(
+                `
+                SELECT w.wheel_id 
+                FROM wheels w
+                LEFT JOIN users_wheels uw ON w.wheel_id = uw.wheel_id AND uw.user_id = $1
+                WHERE uw.wheel_id IS NULL
+                LIMIT 1
+                `,
+                [currentUser.userId]
+            );
+            newWheelId = result.rows[0]?.wheel_id;
+            if (!newWheelId) {
+                const newWheelResult = await pool.query(
+                    `INSERT INTO wheels (owner_id, name, interval_seconds, created_at, updated_at)
+                    VALUES ($1, $2, $3, NOW(), NOW())
+                    RETURNING wheel_id`,
+                    [1, 'wheelTest9999', 9999]
+                );
+                newWheelId = newWheelResult.rows[0].wheel_id;
+            }
+
+            const response = await request(app)
+                .post(`/api/wheels/${newWheelId}/attach`)
+                .set('Authorization', `Bearer ${currentUser.authToken}`)
+                .expect(200);
+ 
+            expect(response.body).toHaveProperty('success', true);
+            const currentUserData = await request(app)
+                .get('/api/user')
+                .set('Authorization', `Bearer ${currentUser.authToken}`)
+                .expect(200);   
+
+            expect(currentUserData.body.data.wheels).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({ wheel_id: newWheelId })
+                ])
+            );      
+        })     
+    })
+    describe('POST /api/wheels/:wheelId/detach', () => {
+        test('should detach wheel from user', async () => {
+            const response = await request(app)
+                .post(`/api/wheels/${newWheelId}/detach`)
+                .set('Authorization', `Bearer ${currentUser.authToken}`)
+                .expect(200);
+ 
+            expect(response.body).toHaveProperty('success', true);
+            const currentUserData = await request(app)
+                .get('/api/user')
+                .set('Authorization', `Bearer ${currentUser.authToken}`)
+                .expect(200);   
+
+            expect(currentUserData.body.data.wheels).not.toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({ wheel_id: newWheelId })
+                ])
+            );     
+        })     
     })
     afterAll(async () => {
         const fieldsIdArray = []
