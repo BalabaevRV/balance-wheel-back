@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, test } from '@jest/globals';
 import { getAuthToken } from '@/tests/helper/auth' 
 import { TestUser } from '@/modules/user/user.types'
 import { IWheel } from '@/modules/wheel/wheel.types';
+import { IRecord } from '../record/record.types';
 
 describe('User routes Integration Tests', () => {
     let currentUser: TestUser 
@@ -48,6 +49,20 @@ describe('User routes Integration Tests', () => {
                 expect(wheel).toHaveProperty('interval_seconds');
                 expect(wheel).toHaveProperty('fields');
                 expect(Array.isArray(wheel.fields)).toBe(true);
+            });
+        })
+    })
+    describe('GET /api/user/:id/records', () => {
+        test('should get records for a specific user', async () => {            
+            const response = await request(app)
+                .get(`/api/user/${currentUser.userId}/records`)
+                .set('Authorization', `Bearer ${currentUser.authToken}`)
+                .expect(200);
+            response.body.data.length > 0 && response.body.data.forEach((record: IRecord) => {
+                expect(record).toHaveProperty('record_id');
+                expect(record).toHaveProperty('wheel_id');
+                expect(record).toHaveProperty('user_id');
+                expect(record).toHaveProperty('values');
             });
         })
     })

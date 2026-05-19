@@ -48,7 +48,7 @@ import { IField } from './field.types'
     beforeAll(async () => {
         currentUser = await getAuthToken();
     })
-    describe('POST /api/wheels', () => {
+    describe('POST /api/wheels create', () => {
         test('should create wheel', async () => {
             const response = await request(app)
                 .post('/api/wheels')
@@ -206,6 +206,7 @@ import { IField } from './field.types'
                     expect.objectContaining({ wheel_id: newWheelId })
                 ])
             );     
+            await pool.query('DELETE FROM wheels WHERE wheel_id = ANY($1::int[])', [newWheelId]);
         })     
     })
     afterAll(async () => {
