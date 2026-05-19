@@ -1,6 +1,6 @@
 import { pool } from '@/config/database'
 
-export const getRecordsIdArrayByUser = async (userId: number, limit: number = 10) => {
+export const getRecordsIdArrayByUser = async (userId: number, limit?: number) => {
     let query:string = `
         SELECT record_id
         FROM records
