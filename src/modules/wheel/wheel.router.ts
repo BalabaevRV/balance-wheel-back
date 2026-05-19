@@ -4,10 +4,13 @@ import { getWheels, getWheelById, saveWheel, attachWheel, detachWheel } from '@/
 const express = require('express')
 const router = express.Router()
 
-router.get('/wheels', authMiddleware, authGuard,  getWheels)
-router.get('/wheels/:id', authMiddleware, authGuard,  getWheelById)
-router.post('/wheels', authMiddleware, authGuard,  saveWheel)
-router.post('/wheels/:wheelId/attach', authMiddleware, authGuard,  attachWheel)
-router.post('/wheels/:wheelId/detach', authMiddleware, authGuard,  detachWheel)
+router.use(authMiddleware);
+router.use(authGuard);
+
+router.get('/wheels', getWheels)
+router.get('/wheels/:id', getWheelById)
+router.post('/wheels', saveWheel)
+router.post('/wheels/:wheelId/attach', attachWheel)
+router.post('/wheels/:wheelId/detach', detachWheel)
 
 export default router
