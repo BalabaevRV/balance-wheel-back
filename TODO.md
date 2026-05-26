@@ -1,3 +1,4 @@
 - Improve error handling
 - Add comments to entry
 - Add recurrence to wheels
+- Add avatars to user
