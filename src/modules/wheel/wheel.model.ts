@@ -247,6 +247,8 @@ export const updateWheel = async (wheelId: number, wheelData: IWheelSave):Promis
         await client.query('ROLLBACK');
         console.error('Error updating wheel:', error);
         throw error;
+    } finally {
+        client.release();
     }
 }
 
@@ -277,7 +279,9 @@ export const createWheel = async (wheelData: IWheelSave, userId: number):Promise
         await client.query('ROLLBACK');
         console.error('Error create wheel:', error);
         throw error;
-    }
+    }   finally {
+        client.release();
+     }
 }
 
 export const addWheelToUser = async (userId: number, wheelId: number, client?: PoolClient) => {       

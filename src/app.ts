@@ -1,6 +1,7 @@
 import authRouter from '@/modules/user/auth.router'
 import userRouter from '@/modules/user/user.router'
 import wheelRouter from '@/modules/wheel/wheel.router'
+import recordRouter from '@/modules/record/record.router'
 
 
 const express = require('express')
@@ -17,7 +18,8 @@ app.get('/', (req: any, res: any) => {
 
 app.use('/api', authRouter)
 app.use('/api', userRouter)
-app.use('/api',wheelRouter)
+app.use('/api', wheelRouter)
+app.use('/api', recordRouter)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

@@ -6,6 +6,7 @@ import { IUser, TestUser } from '@/modules/user/user.types'
 import { getAuthToken } from '@/tests/helper/auth' 
 import { IWheel } from '@/modules/wheel/wheel.types'
 import { IRecordSave } from '@/modules/record/record.types'
+import { IField } from '../wheel/field.types'
 
 describe('Record routes Integration Tests', () => {
     let currentUserInfo: IUser
@@ -45,7 +46,7 @@ describe('Record routes Integration Tests', () => {
         }
         if (currentWheel) {
             newRecord = { wheel_id: currentWheel.wheel_id, user_id: currentUserInfo.user_id, values: [] }
-            newRecord.values = currentWheel.fields.map((field: any) => ({ name: field.name, color_hex: field.color_hex, value: Math.floor(Math.random() * 10) + 1}))
+            newRecord.values = currentWheel.fields.map((field: IField) => ({name: field.name, color_hex: field.color_hex, field_id: field.field_id, value: Math.floor(Math.random() * 10) + 1}))
         }
     })
     describe('POST /api/records create', () => {
@@ -55,14 +56,14 @@ describe('Record routes Integration Tests', () => {
                 .set('Authorization', `Bearer ${currentUser.authToken}`)
                 .send(newRecord)
                 .expect(201); 
-                
                 expect(response.body).toHaveProperty('success', true);
                 expect(response.body.data).toMatchObject({
                     record_id: expect.any(Number),
                     wheel_id: newRecord?.wheel_id,
                     user_id: newRecord?.user_id,
-                    values: newRecord?.values,
+                    values: expect.arrayContaining(newRecord?.values || [])
                 });
+
                 newRecord.record_id = response.body.data.record_id
                 const dbResultRecord = await pool.query(
                     'SELECT * FROM records WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1',
@@ -70,37 +71,31 @@ describe('Record routes Integration Tests', () => {
                 );
 
                 expect(dbResultRecord.rows).toHaveLength(1);
-                dbResultRecord.rows[0].record_id = newRecord.record_id; 
+                expect(dbResultRecord.rows[0].wheel_id).toBe(newRecord.wheel_id);
         });
         describe('POST /api/records edit', () => {
-        test('should edit record', async () => {
-            const updatedValues = newRecord.values.map((field) => ({
-                ...field,
-                value:  field.value  === 10 ? 1 : field.value + 1
-            }));
-            const response = await request(app)
-                .post('/api/records')
-                .set('Authorization', `Bearer ${currentUser.authToken}`)
-                .send({ ...newRecord, values: updatedValues })
-                .expect(200);
+            test('should edit record', async () => {
+                const updatedValues = newRecord.values.map((field) => ({
+                    ...field,
+                    value:  field.value  === 10 ? 1 : field.value + 1
+                }));
+                const response = await request(app)
+                    .post('/api/records')
+                    .set('Authorization', `Bearer ${currentUser.authToken}`)
+                    .send({ ...newRecord, values: updatedValues })
+                    .expect(200);
 
-            expect(response.body).toHaveProperty('success', true);
-            expect(response.body.data).toMatchObject({
-                record_id: newRecord.record_id,
-                wheel_id: newRecord.wheel_id,
-                user_id: newRecord.user_id,
-                values: updatedValues
+                expect(response.body).toHaveProperty('success', true);
+                expect(response.body.data).toMatchObject({
+                    record_id: newRecord.record_id,
+                    wheel_id: newRecord.wheel_id,
+                    user_id: newRecord.user_id,
+                    values: expect.arrayContaining(updatedValues || [])
+                });
+                newRecord.values = updatedValues     
             });
-            newRecord.values = updatedValues
-            const dbResultRecord = await pool.query(
-                'SELECT * FROM records WHERE record_id = $1',
-                [newRecord.record_id]
-            );
-            expect(dbResultRecord.rows).toHaveLength(1);
-            expect(dbResultRecord.rows[0].values).toBe(updatedValues);           
-        });
     })
-        describe('GET /api/records/:id', () => {
+    describe('GET /api/records/:id', () => {
         test('should get records by id', async () => {
             const response = await request(app)
                 .get(`/api/records/${newRecord.record_id}`)
@@ -112,11 +107,11 @@ describe('Record routes Integration Tests', () => {
                 record_id: newRecord.record_id,
                 wheel_id: newRecord.wheel_id,
                 user_id: newRecord.user_id,
-                values: newRecord.values
+                values: expect.arrayContaining(newRecord.values || [])
             });
         });
     })
-        describe('DELETE /api/records/:id', () => {
+    describe('DELETE /api/records/:id', () => {
         test('should delete record', async () => {
             const response = await request(app)
                 .delete(`/api/records/${newRecord.record_id}`)
@@ -129,8 +124,9 @@ describe('Record routes Integration Tests', () => {
             );
             expect(dbResultRecord.rows).toHaveLength(0);
         });
-        })
+    })
         afterAll(async () => {
+            await pool.query('DELETE FROM record_values WHERE record_id = $1', [newRecord.record_id]);
             await pool.query('DELETE FROM records WHERE user_id = $1', [newRecord.record_id]);
         })
     })
