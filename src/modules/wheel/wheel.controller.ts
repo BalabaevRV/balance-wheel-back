@@ -9,7 +9,7 @@ export const getWheels = async (req: Request, res: Response) => {
   try {
     const wheelsList = await getWheelsList();
     const answer = {
-      message: 'User created successfully',
+      message: 'Wheels retrieved successfully',
       success: true,
       data: wheelsList
     }
