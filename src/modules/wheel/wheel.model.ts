@@ -27,6 +27,7 @@ export const getWheelsByIdArray = async (wheelIds: number[]) => {
     const query = `
     SELECT 
         w.wheel_id,
+        w.owner_id,
         w.name,
         w.interval_seconds,
         COALESCE(
