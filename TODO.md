@@ -1,12 +1,11 @@
 back
-- Improve error handling (back)
-- Add recurrence to wheels (back + front)
 - Add avatars to user (back + front)
 - Print records (back + front)
 - Add email after registration (back)
 - Add change password (back + front)
 - Add pagination to wheels (back + front)
 - Add validation to create wheels (empty name, no fields)
+- Add recurrence to wheels (back + front)       
 
 front 
 - Add note to entry (front)

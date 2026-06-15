@@ -45,7 +45,12 @@ describe('Record routes Integration Tests', () => {
 			currentWheel = responseWheel.body.data
 		}
 		if (currentWheel) {
-			newRecord = { wheel_id: currentWheel.wheel_id, user_id: currentUserInfo.user_id, values: [], note: 'Initial record' }
+			newRecord = {
+				wheel_id: currentWheel.wheel_id,
+				user_id: currentUserInfo.user_id,
+				values: [],
+				note: 'Initial record'
+			}
 			newRecord.values = currentWheel.fields.map((field: IField) => ({
 				name: field.name,
 				color_hex: field.color_hex,

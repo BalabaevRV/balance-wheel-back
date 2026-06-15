@@ -43,8 +43,8 @@ describe('Auth routes Integration Tests', () => {
 		})
 		test('should return 400 if user already exists', async () => {
 			const response = await request(app).post('/api/signup').send(userData).expect(400)
-
-			expect(response.body.error).toBeDefined()
+			console.log('Response body for duplicate signup:', response.body)
+			expect(response.body.success).toBe(false)
 		})
 	})
 
@@ -130,7 +130,7 @@ describe('Auth routes Integration Tests', () => {
 				})
 				.expect(401)
 
-			expect(response.body.error).toBeDefined()
+			expect(response.body.success).toBe(false)
 		})
 	})
 	afterAll(async () => {

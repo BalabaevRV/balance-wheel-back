@@ -7,8 +7,8 @@ export interface IRecord {
 	balance_wheel_name: string
 	created_at: Date
 	updated_at: Date
-	date: Date,
-	note: string,
+	date: Date
+	note: string
 	values: IFieldValue[]
 }
 
