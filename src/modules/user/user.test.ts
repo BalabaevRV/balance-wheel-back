@@ -59,6 +59,7 @@ describe('User routes Integration Tests', () => {
 					expect(record).toHaveProperty('record_id')
 					expect(record).toHaveProperty('wheel_id')
 					expect(record).toHaveProperty('user_id')
+					expect(record).toHaveProperty('note')
 					expect(record).toHaveProperty('values')
 				})
 		})

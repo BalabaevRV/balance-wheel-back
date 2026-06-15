@@ -117,7 +117,7 @@ async function createRecordsTable() {
             user_id INTEGER NOT NULL,
             wheel_id INTEGER NOT NULL,
             date DATE NOT NULL,
-            notes TEXT DEFAULT '',
+            notes VARCHAR(255) DEFAULT '',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,

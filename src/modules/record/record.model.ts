@@ -32,6 +32,7 @@ export const getRecordsByIdArray = async (recordIds: number[]): Promise<IRecord[
             r.created_at,
             r.updated_at,
             r.date,
+			r.note,
             COALESCE(
                 json_agg(
                     json_build_object(
@@ -62,12 +63,12 @@ export const createRecord = async (recordData: IRecordSave, userId: number): Pro
 	try {
 		await client.query('BEGIN')
 		const query = `
-            INSERT INTO records (user_id, wheel_id, date)
-            VALUES ($1, $2, COALESCE($3, NOW()))
+            INSERT INTO records (user_id, wheel_id, date, note)
+            VALUES ($1, $2, COALESCE($3, NOW()), COALESCE($4, ''))
             RETURNING record_id, user_id, wheel_id, date
         `
 
-		const valuesQuery = [userId, recordData.wheel_id, recordData.date]
+		const valuesQuery = [userId, recordData.wheel_id, recordData.date, recordData.note]
 		const result = await pool.query(query, valuesQuery)
 		const record = result.rows[0]
 		const valuesRecord = await insertRecordValues(record.record_id, recordData.values, client)
@@ -89,11 +90,11 @@ export const updateRecord = async (recordData: IRecordSave, userId: number): Pro
 		await client.query('BEGIN')
 		const query = `
             UPDATE records
-            SET wheel_id = $1, date = COALESCE($2, NOW())
-            WHERE record_id = $3 AND user_id = $4
-            RETURNING record_id, user_id, wheel_id, date
+            SET wheel_id = $1, date = COALESCE($2, NOW()), note = COALESCE($3, '')
+            WHERE record_id = $4 AND user_id = $5
+            RETURNING record_id, user_id, wheel_id, date, note
         `
-		const valuesQuery = [recordData.wheel_id, recordData.date, recordData.record_id, userId]
+		const valuesQuery = [recordData.wheel_id, recordData.date, recordData.note, recordData.record_id, userId]
 		const result = await client.query(query, valuesQuery)
 		const record = result.rows[0]
 		const valuesRecord = await updateRecordValues(record.record_id, recordData.values, client)

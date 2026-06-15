@@ -45,7 +45,7 @@ describe('Record routes Integration Tests', () => {
 			currentWheel = responseWheel.body.data
 		}
 		if (currentWheel) {
-			newRecord = { wheel_id: currentWheel.wheel_id, user_id: currentUserInfo.user_id, values: [] }
+			newRecord = { wheel_id: currentWheel.wheel_id, user_id: currentUserInfo.user_id, values: [], note: 'Initial record' }
 			newRecord.values = currentWheel.fields.map((field: IField) => ({
 				name: field.name,
 				color_hex: field.color_hex,
@@ -66,6 +66,7 @@ describe('Record routes Integration Tests', () => {
 				record_id: expect.any(Number),
 				wheel_id: newRecord?.wheel_id,
 				user_id: newRecord?.user_id,
+				note: newRecord?.note,
 				values: expect.arrayContaining(newRecord?.values || [])
 			})
 
@@ -84,6 +85,7 @@ describe('Record routes Integration Tests', () => {
 					...field,
 					value: field.value === 10 ? 1 : field.value + 1
 				}))
+				newRecord.note = 'Updated record note'
 				const response = await request(app)
 					.post('/api/records')
 					.set('Authorization', `Bearer ${currentUser.authToken}`)
@@ -95,6 +97,7 @@ describe('Record routes Integration Tests', () => {
 					record_id: newRecord.record_id,
 					wheel_id: newRecord.wheel_id,
 					user_id: newRecord.user_id,
+					note: newRecord.note,
 					values: expect.arrayContaining(updatedValues || [])
 				})
 				newRecord.values = updatedValues
@@ -112,6 +115,7 @@ describe('Record routes Integration Tests', () => {
 					record_id: newRecord.record_id,
 					wheel_id: newRecord.wheel_id,
 					user_id: newRecord.user_id,
+					note: newRecord.note,
 					values: expect.arrayContaining(newRecord.values || [])
 				})
 			})
