@@ -1,4 +1,19 @@
-- Improve error handling
-- Add comments to entry
-- Add recurrence to wheels
-- Add avatars to user
+- Improve error handling (back)
+- add linter
+- Add comments to entry (back + front)
+- Add recurrence to wheels (back + front)
+- Add avatars to user (back + front)
+- Print records (back + front)
+- Add Error Boundary (front)
+- Add email after registration (back)
+- Add change password (back + front)
+- Add change language (front)
+- Add validation to create wheels (empty name, no fields)
+- Add pagination to wheels (back + front)
+- Add  React Query (TanStack Query), TanStack Router
+- React Hook Form   
+- telegram notification (back)
+- Add charts (back + front)
+- CI/CD
+- FSD in linter (???)
+- husky???
