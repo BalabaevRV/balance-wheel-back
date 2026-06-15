@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import { getUserInfoById } from '@/modules/user/user.service'
-import { findUserById } from '@/modules/user/user.model'
 import { getWheelsByUserId } from '@/modules/wheel/wheel.service'
 import { getRecordsByUserId } from '@/modules/record/record.service'
 
@@ -25,7 +24,6 @@ export const getUserInfo = async(req: Request, res: Response) => {
         }
         res.status(200).json(answer);
       } catch (error) {
-        // Проверяем тип ошибки
         if (error instanceof Error) {
           if (error.message === 'User already exists') {
             return res.status(400).json({ error: error.message });
@@ -47,7 +45,6 @@ export const getWheelsByUser = async(req: Request, res: Response) => {
         }
         res.status(200).json(answer);
       } catch (error) {
-        // Проверяем тип ошибки
         if (error instanceof Error) {
           if (error.message === 'Failed to retrieve user wheels') {
             return res.status(400).json({ error: error.message });
@@ -69,7 +66,6 @@ export const getRecordsByUser = async(req: Request, res: Response) => {
         }
         res.status(200).json(answer);
       } catch (error) {
-        // Проверяем тип ошибки
         if (error instanceof Error) {
           if (error.message === 'Failed to retrieve user records') {
             return res.status(400).json({ error: error.message });
