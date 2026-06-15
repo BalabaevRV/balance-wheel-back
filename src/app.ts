@@ -3,7 +3,6 @@ import userRouter from '@/modules/user/user.router'
 import wheelRouter from '@/modules/wheel/wheel.router'
 import recordRouter from '@/modules/record/record.router'
 
-
 const express = require('express')
 const cors = require('cors')
 const app = express()
@@ -13,7 +12,7 @@ app.use(cors())
 app.use(express.json())
 
 app.get('/', (req: any, res: any) => {
-  res.send('Hello World!')
+	res.send('Hello World!')
 })
 
 app.use('/api', authRouter)
@@ -22,7 +21,7 @@ app.use('/api', wheelRouter)
 app.use('/api', recordRouter)
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+	console.log(`Example app listening on port ${port}`)
 })
 
 export default app

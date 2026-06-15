@@ -4,9 +4,8 @@ import { saveRecord, getRecordById, deleteRecord } from '@/modules/record/record
 const express = require('express')
 const router = express.Router()
 
-router.use(authMiddleware);
-router.use(authGuard);
-
+router.use(authMiddleware)
+router.use(authGuard)
 
 router.post('/records', saveRecord)
 router.get('/records/:id', getRecordById)

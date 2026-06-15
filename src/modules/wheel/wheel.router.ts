@@ -4,8 +4,8 @@ import { getWheels, getWheelById, saveWheel, attachWheel, detachWheel } from '@/
 const express = require('express')
 const router = express.Router()
 
-router.use(authMiddleware);
-router.use(authGuard);
+router.use(authMiddleware)
+router.use(authGuard)
 
 router.get('/wheels', getWheels)
 router.get('/wheels/:id', getWheelById)

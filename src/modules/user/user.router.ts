@@ -4,8 +4,8 @@ import { authGuard, authMiddleware } from '@/shared/middleware/auth.middleware'
 const express = require('express')
 const router = express.Router()
 
-router.use(authMiddleware);
-router.use(authGuard);
+router.use(authMiddleware)
+router.use(authGuard)
 
 router.get('/user', getUserInfo)
 router.get('/user/:id', getUserInfo)

@@ -3,228 +3,219 @@ import app from '@/app'
 import { pool } from '@/config/database'
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals'
 import { TestUser } from '@/modules/user/user.types'
-import { getAuthToken } from '@/tests/helper/auth' 
-import { IWheel, IWheelSave } from './wheel.types'
+import { getAuthToken } from '@/tests/helper/auth'
+import { IWheelSave } from './wheel.types'
 import { IField } from './field.types'
 
+describe('User routes Integration Tests', () => {
+	let currentUser: TestUser
+	let newWheelId: number | undefined
+	const FieldsArrayFirst: IField[] = [
+		{ name: 'Red', color_hex: '#FF0000' },
+		{ name: 'Green', color_hex: '#00FF00' },
+		{ name: 'Blue', color_hex: '#0000FF' },
+		{ name: 'Yellow', color_hex: '#FFFF00' },
+		{ name: 'Purple', color_hex: '#800080' },
+		{ name: 'Orange', color_hex: '#FFA500' }
+	]
+	const FieldsArraySecond: IField[] = [
+		{ name: 'Pink', color_hex: '#FFC0CB' },
+		{ name: 'Cyan', color_hex: '#00FFFF' },
+		{ name: 'Magenta', color_hex: '#FF00FF' },
+		{ name: 'Lime', color_hex: '#00FF00' },
+		{ name: 'Teal', color_hex: '#008080' },
+		{ name: 'Navy', color_hex: '#000080' }
+	]
+	const wheelItemFirst: IWheelSave = {
+		name: 'wheelTest1',
+		interval_seconds: 86400,
+		fields: FieldsArrayFirst
+	}
+	const wheelItemSecond: IWheelSave = {
+		name: 'wheelTest2',
+		interval_seconds: 86400,
+		fields: FieldsArraySecond
+	}
 
- describe('User routes Integration Tests', () => {
-    let currentUser: TestUser 
-    let newWheelId: number | undefined 
-    const FieldsArrayFirst: IField[] = [
-        { name: 'Red', color_hex: '#FF0000' },
-        { name: 'Green', color_hex: '#00FF00' },
-        { name: 'Blue', color_hex: '#0000FF' },
-        { name: 'Yellow', color_hex: '#FFFF00' },
-        { name: 'Purple', color_hex: '#800080' },
-        { name: 'Orange', color_hex: '#FFA500' }
-    ]
-    const FieldsArraySecond: IField[] = [
-        { name: 'Pink', color_hex: '#FFC0CB' },
-        { name: 'Cyan', color_hex: '#00FFFF' },
-        { name: 'Magenta', color_hex: '#FF00FF' },
-        { name: 'Lime', color_hex: '#00FF00' },
-        { name: 'Teal', color_hex: '#008080' },
-        { name: 'Navy', color_hex: '#000080' }
-    ]
-    const wheelItemFirst: IWheelSave = {
-        name: 'wheelTest1',
-        interval_seconds: 86400,
-        fields: FieldsArrayFirst 
-    }
-    const wheelItemSecond: IWheelSave = {
-        name: 'wheelTest2',
-        interval_seconds: 86400,
-        fields: FieldsArraySecond
-    }
+	const expectedFields = FieldsArrayFirst.map((field) =>
+		expect.objectContaining({
+			name: field.name,
+			color_hex: field.color_hex
+		})
+	)
 
-    const expectedFields = FieldsArrayFirst.map(field => 
-        expect.objectContaining({
-            name: field.name,
-            color_hex: field.color_hex
-        })
-    );
+	beforeAll(async () => {
+		currentUser = await getAuthToken()
+	})
+	describe('POST /api/wheels create', () => {
+		test('should create wheel', async () => {
+			const response = await request(app)
+				.post('/api/wheels')
+				.set('Authorization', `Bearer ${currentUser.authToken}`)
+				.send({ ...wheelItemFirst, fields: FieldsArrayFirst })
+				.expect(201)
 
-    beforeAll(async () => {
-        currentUser = await getAuthToken();
-    })
-    describe('POST /api/wheels create', () => {
-        test('should create wheel', async () => {
-            const response = await request(app)
-                .post('/api/wheels')
-                .set('Authorization', `Bearer ${currentUser.authToken}`)
-                .send({...wheelItemFirst, fields: FieldsArrayFirst})
-                .expect(201);
-            
-    
-            expect(response.body).toHaveProperty('success', true);
-            expect(response.body.data).toMatchObject({
-                ...wheelItemFirst,
-                fields:  expectedFields
-            })
+			expect(response.body).toHaveProperty('success', true)
+			expect(response.body.data).toMatchObject({
+				...wheelItemFirst,
+				fields: expectedFields
+			})
 
-            wheelItemFirst.wheel_id = response.body.data.wheel_id
-            const dbResultWheel = await pool.query(
-                'SELECT * FROM wheels WHERE wheel_id = $1',
-                [wheelItemFirst.wheel_id]
-            );
-            
-            expect(dbResultWheel.rows).toHaveLength(1);
+			wheelItemFirst.wheel_id = response.body.data.wheel_id
+			const dbResultWheel = await pool.query('SELECT * FROM wheels WHERE wheel_id = $1', [wheelItemFirst.wheel_id])
 
-            const dbResultFields = await pool.query(
-                'SELECT * FROM wheels LEFT JOIN wheels_fields ON wheels.wheel_id = wheels_fields.wheel_id WHERE wheels.wheel_id = $1',
-                [wheelItemFirst.wheel_id]
-            )
+			expect(dbResultWheel.rows).toHaveLength(1)
 
-            expect(dbResultFields.rows).toHaveLength(FieldsArrayFirst.length);
+			const dbResultFields = await pool.query(
+				'SELECT * FROM wheels LEFT JOIN wheels_fields ON wheels.wheel_id = wheels_fields.wheel_id WHERE wheels.wheel_id = $1',
+				[wheelItemFirst.wheel_id]
+			)
 
-            const dbResultUser = await pool.query(
-                'SELECT * FROM users LEFT JOIN users_wheels ON users.user_id = users_wheels.wheel_id WHERE users.user_id = $1',
-                [currentUser.userId]
-            )
+			expect(dbResultFields.rows).toHaveLength(FieldsArrayFirst.length)
 
-            expect(dbResultUser.rows).toHaveLength(1);
-        })
-    })
-    describe('POST /api/wheels', () => {
-        test('should edit wheel by id', async () => {
-            wheelItemFirst.name = 'wheelTest1Edit'
-            FieldsArrayFirst[0] = { name: 'Cyan', color_hex: '#00FFFF' }
-            const response = await request(app)
-                .post(`/api/wheels`)
-                .set('Authorization', `Bearer ${currentUser.authToken}`)
-                .send({...wheelItemFirst, fields: FieldsArrayFirst})
-                .expect(200);
+			const dbResultUser = await pool.query(
+				'SELECT * FROM users LEFT JOIN users_wheels ON users.user_id = users_wheels.wheel_id WHERE users.user_id = $1',
+				[currentUser.userId]
+			)
 
-            expect(response.body).toHaveProperty('success', true);
-        
-            expectedFields.splice(0, 1)
-            expectedFields.push(expect.objectContaining({
-                name: FieldsArrayFirst[0].name,
-                color_hex: FieldsArrayFirst[0].color_hex
-            }))
+			expect(dbResultUser.rows).toHaveLength(1)
+		})
+	})
+	describe('POST /api/wheels', () => {
+		test('should edit wheel by id', async () => {
+			wheelItemFirst.name = 'wheelTest1Edit'
+			FieldsArrayFirst[0] = { name: 'Cyan', color_hex: '#00FFFF' }
+			const response = await request(app)
+				.post(`/api/wheels`)
+				.set('Authorization', `Bearer ${currentUser.authToken}`)
+				.send({ ...wheelItemFirst, fields: FieldsArrayFirst })
+				.expect(200)
 
-            expect(response.body.data).toMatchObject({
-                name: wheelItemFirst.name,
-                interval_seconds: wheelItemFirst.interval_seconds,
-                fields:  expectedFields
-            })
-        })
-    })
-    describe('GET /api/wheels', () => {
-        test('should get wheel list', async () => {
-            const secondWheel =  await pool.query('SELECT * FROM wheels WHERE name = $1', [wheelItemSecond.name]);
-            if (!secondWheel.rows.length) {
-                const responseWheel = await request(app)
-                    .post(`/api/wheels`)
-                    .set('Authorization', `Bearer ${currentUser.authToken}`)
-                    .send({...wheelItemSecond, fields: FieldsArraySecond})
-                    .expect(201);
-         
-            }
+			expect(response.body).toHaveProperty('success', true)
 
-            const response = await request(app)
-            .get('/api/wheels')
-            .set('Authorization', `Bearer ${currentUser.authToken}`)
-            .expect(200);
-            
-            expect(response.body).toHaveProperty('success', true);
-            expect(response.body.data.length).toBeGreaterThan(0);
-        })
-    })
-    describe('GET /api/wheels/:id', () => {
-         test('should get wheel by id', async () => {
-            const response = await request(app)
-                    .get(`/api/wheels/${wheelItemFirst.wheel_id}`)
-                    .set('Authorization', `Bearer ${currentUser.authToken}`)
-                    .expect(200);
+			expectedFields.splice(0, 1)
+			expectedFields.push(
+				expect.objectContaining({
+					name: FieldsArrayFirst[0].name,
+					color_hex: FieldsArrayFirst[0].color_hex
+				})
+			)
 
-            expect(response.body).toHaveProperty('success', true);
-            expect(response.body.data).toMatchObject({
-                name: wheelItemFirst.name,
-                interval_seconds: wheelItemFirst.interval_seconds,
-                fields:  expectedFields
-            }) 
-         })
-    })
-    describe('POST /api/wheels/:wheelId/attach', () => {
-        test('should attach wheel to user', async () => {
-            const result = await pool.query(
-                `
+			expect(response.body.data).toMatchObject({
+				name: wheelItemFirst.name,
+				interval_seconds: wheelItemFirst.interval_seconds,
+				fields: expectedFields
+			})
+		})
+	})
+	describe('GET /api/wheels', () => {
+		test('should get wheel list', async () => {
+			const secondWheel = await pool.query('SELECT * FROM wheels WHERE name = $1', [wheelItemSecond.name])
+			if (!secondWheel.rows.length) {
+				await request(app)
+					.post(`/api/wheels`)
+					.set('Authorization', `Bearer ${currentUser.authToken}`)
+					.send({ ...wheelItemSecond, fields: FieldsArraySecond })
+					.expect(201)
+			}
+
+			const response = await request(app)
+				.get('/api/wheels')
+				.set('Authorization', `Bearer ${currentUser.authToken}`)
+				.expect(200)
+
+			expect(response.body).toHaveProperty('success', true)
+			expect(response.body.data.length).toBeGreaterThan(0)
+		})
+	})
+	describe('GET /api/wheels/:id', () => {
+		test('should get wheel by id', async () => {
+			const response = await request(app)
+				.get(`/api/wheels/${wheelItemFirst.wheel_id}`)
+				.set('Authorization', `Bearer ${currentUser.authToken}`)
+				.expect(200)
+
+			expect(response.body).toHaveProperty('success', true)
+			expect(response.body.data).toMatchObject({
+				name: wheelItemFirst.name,
+				interval_seconds: wheelItemFirst.interval_seconds,
+				fields: expectedFields
+			})
+		})
+	})
+	describe('POST /api/wheels/:wheelId/attach', () => {
+		test('should attach wheel to user', async () => {
+			const result = await pool.query(
+				`
                 SELECT w.wheel_id 
                 FROM wheels w
                 LEFT JOIN users_wheels uw ON w.wheel_id = uw.wheel_id AND uw.user_id = $1
                 WHERE uw.wheel_id IS NULL
                 LIMIT 1
                 `,
-                [currentUser.userId]
-            );
-            newWheelId = result.rows[0]?.wheel_id;
-            if (!newWheelId) {
-                const newWheelResult = await pool.query(
-                    `INSERT INTO wheels (owner_id, name, interval_seconds, created_at, updated_at)
+				[currentUser.userId]
+			)
+			newWheelId = result.rows[0]?.wheel_id
+			if (!newWheelId) {
+				const newWheelResult = await pool.query(
+					`INSERT INTO wheels (owner_id, name, interval_seconds, created_at, updated_at)
                     VALUES ($1, $2, $3, NOW(), NOW())
                     RETURNING wheel_id`,
-                    [1, 'wheelTest9999', 9999]
-                );
-                newWheelId = newWheelResult.rows[0].wheel_id;
-            }
+					[1, 'wheelTest9999', 9999]
+				)
+				newWheelId = newWheelResult.rows[0].wheel_id
+			}
 
-            const response = await request(app)
-                .post(`/api/wheels/${newWheelId}/attach`)
-                .set('Authorization', `Bearer ${currentUser.authToken}`)
-                .expect(200);
- 
-            expect(response.body).toHaveProperty('success', true);
-            const currentUserData = await request(app)
-                .get('/api/user')
-                .set('Authorization', `Bearer ${currentUser.authToken}`)
-                .expect(200);   
+			const response = await request(app)
+				.post(`/api/wheels/${newWheelId}/attach`)
+				.set('Authorization', `Bearer ${currentUser.authToken}`)
+				.expect(200)
 
-            expect(currentUserData.body.data.wheels).toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining({ wheel_id: newWheelId })
-                ])
-            );      
-        })     
-    })
-    describe('POST /api/wheels/:wheelId/detach', () => {
-        test('should detach wheel from user', async () => {
-            const response = await request(app)
-                .post(`/api/wheels/${newWheelId}/detach`)
-                .set('Authorization', `Bearer ${currentUser.authToken}`)
-                .expect(200);
- 
-            expect(response.body).toHaveProperty('success', true);
-            const currentUserData = await request(app)
-                .get('/api/user')
-                .set('Authorization', `Bearer ${currentUser.authToken}`)
-                .expect(200);   
+			expect(response.body).toHaveProperty('success', true)
+			const currentUserData = await request(app)
+				.get('/api/user')
+				.set('Authorization', `Bearer ${currentUser.authToken}`)
+				.expect(200)
 
-            expect(currentUserData.body.data.wheels).not.toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining({ wheel_id: newWheelId })
-                ])
-            );     
-            await pool.query('DELETE FROM wheels WHERE wheel_id = ANY($1::int[])', [[newWheelId]]);
-        })     
-    })
-    afterAll(async () => {
-        const fieldsIdArray = []
-        for (const field of FieldsArrayFirst) {
-            fieldsIdArray.push(field.field_id)
-        }
-        const wheelsId = [wheelItemFirst.wheel_id];
+			expect(currentUserData.body.data.wheels).toEqual(
+				expect.arrayContaining([expect.objectContaining({ wheel_id: newWheelId })])
+			)
+		})
+	})
+	describe('POST /api/wheels/:wheelId/detach', () => {
+		test('should detach wheel from user', async () => {
+			const response = await request(app)
+				.post(`/api/wheels/${newWheelId}/detach`)
+				.set('Authorization', `Bearer ${currentUser.authToken}`)
+				.expect(200)
 
-        await pool.query('DELETE FROM wheels_fields WHERE wheel_id = ANY($1::int[])', [wheelsId]);
-        console.log(`✅ Test fields deleted`);   
+			expect(response.body).toHaveProperty('success', true)
+			const currentUserData = await request(app)
+				.get('/api/user')
+				.set('Authorization', `Bearer ${currentUser.authToken}`)
+				.expect(200)
 
-        await pool.query('DELETE FROM fields WHERE field_id = ANY($1::int[])', [fieldsIdArray]);
-        console.log(`✅ Test fields deleted`);   
+			expect(currentUserData.body.data.wheels).not.toEqual(
+				expect.arrayContaining([expect.objectContaining({ wheel_id: newWheelId })])
+			)
+			await pool.query('DELETE FROM wheels WHERE wheel_id = ANY($1::int[])', [[newWheelId]])
+		})
+	})
+	afterAll(async () => {
+		const fieldsIdArray = []
+		for (const field of FieldsArrayFirst) {
+			fieldsIdArray.push(field.field_id)
+		}
+		const wheelsId = [wheelItemFirst.wheel_id]
 
-        await pool.query('DELETE FROM wheels WHERE wheel_id = ANY($1::int[])', [wheelsId]);
-        console.log(`✅ Test wheels deleted`);        
-        console.log('✅ Test data cleaned up');   
-    })
+		await pool.query('DELETE FROM wheels_fields WHERE wheel_id = ANY($1::int[])', [wheelsId])
+		console.log(`✅ Test fields deleted`)
+
+		await pool.query('DELETE FROM fields WHERE field_id = ANY($1::int[])', [fieldsIdArray])
+		console.log(`✅ Test fields deleted`)
+
+		await pool.query('DELETE FROM wheels WHERE wheel_id = ANY($1::int[])', [wheelsId])
+		console.log(`✅ Test wheels deleted`)
+		console.log('✅ Test data cleaned up')
+	})
 })
-
