@@ -21,3 +21,15 @@ export const createUser = async (name: string, login: string, email: string, pas
 	const result = await pool.query(query, [name, login, email, password])
 	return result.rows[0] || null
 }
+
+export const updateAvatarById = async (userId: number, avatarUrl: string) => {
+	const query = 'UPDATE users SET avatar_url = $1 WHERE user_id = $2 RETURNING *'
+	const result = await pool.query(query, [avatarUrl, userId])
+	return result.rows[0] || null
+}
+
+export const deleteAvatarById = async (userId: number) => {
+	const query = 'UPDATE users SET avatar_url = NULL WHERE user_id = $1 RETURNING *'
+	const result = await pool.query(query, [userId])
+	return result.rows[0] || null
+}

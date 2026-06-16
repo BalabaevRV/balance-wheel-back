@@ -6,6 +6,7 @@ export interface IUser {
 	name: string
 	login: string
 	email: string
+	avatar_url: string | null
 	wheels: IWheel[]
 	records: IRecord[]
 }

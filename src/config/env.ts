@@ -25,7 +25,8 @@ export const config = {
 	dbPassword: process.env.DB_PASSWORD || 'postgres',
 	dbName: process.env.DB_NAME || 'myapp_dev',
 	secret: process.env.SECRET || 'secret',
-	salt: Number(process.env.SALT) || 10
+	salt: Number(process.env.SALT) || 10,
+	maxAvatarSize: Number(process.env.MAX_AVATAR_SIZE) || 5 // in MB
 } as const
 
 // Типизация конфига

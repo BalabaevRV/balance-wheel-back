@@ -7,6 +7,7 @@ export async function createUsersTable() {
       name VARCHAR(100) NOT NULL,
       login VARCHAR(100) NOT NULL,
       email VARCHAR(255) UNIQUE NOT NULL,
+      avatar_url VARCHAR(255),
       password VARCHAR(255) NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

@@ -6,6 +6,7 @@ back
 - Add pagination to wheels (back + front)
 - Add validation to create wheels (empty name, no fields)
 - Add recurrence to wheels (back + front)       
+- update profile info (back + front)
 
 front 
 - Add note to entry (front)

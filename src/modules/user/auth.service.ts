@@ -23,7 +23,7 @@ export const userSignup = async (signupPayload: SignupPayload): Promise<IUserTok
 		const jwt = await signJWT(login, newUser.user_id, config.secret)
 		return {
 			token: jwt,
-			user: { user_id: newUser.user_id, login, name, email, wheels: [], records: [] }
+			user: { user_id: newUser.user_id, login, name, email, avatar_url: null, wheels: [], records: [] }
 		}
 	} catch (error) {
 		console.error('❌ Error during signup:', error)
@@ -51,6 +51,7 @@ export const userLogin = async (loginPayload: LoginPayload): Promise<IUserToken>
 				user_id: existingUser.user_id,
 				login: existingUser.login,
 				name: existingUser.name,
+				avatar_url: existingUser.avatar_url,
 				email: existingUser.email,
 				wheels: currentUserWheels,
 				records: currentUserRecords

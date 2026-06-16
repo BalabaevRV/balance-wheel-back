@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getUserInfoById } from '@/modules/user/user.service'
+import { getUserInfoById, updateAvatar, deleteAvatarService } from '@/modules/user/user.service'
 import { getWheelsByUserId } from '@/modules/wheel/wheel.service'
 import { getRecordsByUserId } from '@/modules/record/record.service'
 import { successResponse, errorResponse } from '@/shared/utils/response'
@@ -55,6 +55,29 @@ export const getRecordsByUser = async (req: Request, res: Response) => {
 			return errorResponse(res, error.message, 400)
 		}
 
+		errorResponse(res, 'Internal server error', 500)
+	}
+}
+
+export const updateUserAvatar = async (req: Request, res: Response) => {
+	try {
+		if (!req.file) {
+			return errorResponse(res, 'No file uploaded', 400)
+		}
+		const user = await updateAvatar(Number(req.user), req.file)
+		successResponse(res, user, 'Avatar updated successfully')
+	} catch (error) {
+		console.error('Update avatar error:', error)
+		errorResponse(res, 'Internal server error', 500)
+	}
+}
+
+export const deleteUserAvatar = async (req: Request, res: Response) => {
+	try {
+		const user = await deleteAvatarService(Number(req.user))
+		successResponse(res, user, 'Avatar deleted successfully')
+	} catch (error) {
+		console.error('Delete avatar error:', error)
 		errorResponse(res, 'Internal server error', 500)
 	}
 }

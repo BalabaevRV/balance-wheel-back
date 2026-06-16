@@ -94,7 +94,8 @@ describe('Auth routes Integration Tests', () => {
 			expect(response.body.data.user).toHaveProperty('wheels')
 			expect(response.body.data.user).toMatchObject({
 				name: userData.name,
-				login: userData.login
+				login: userData.login,
+				avatar_url: null
 			})
 			// ✅ Проверяем, что wheels загрузились
 			expect(response.body.data.user).toHaveProperty('wheels')
