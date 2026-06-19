@@ -1,11 +1,21 @@
 import { Request, Response } from 'express'
-import { saveWheelInfo, attachWheelToUser, detachWheelFromUser } from '@/modules/wheel/wheel.service'
-import { getWheelsByIdArray, getWheelsList } from '@/modules/wheel/wheel.model'
+import {
+	saveWheelInfo,
+	attachWheelToUser,
+	detachWheelFromUser,
+	getWheelsWithPagination
+} from '@/modules/wheel/wheel.service'
+import { getWheelsByIdArray } from '@/modules/wheel/wheel.model'
 import { successResponse, errorResponse } from '@/shared/utils/response'
 
 export const getWheels = async (req: Request, res: Response) => {
 	try {
-		const wheelsList = await getWheelsList()
+		const wheelsList = await getWheelsWithPagination({
+			page: Number(req.query.page) || 1,
+			limit: Number(req.query.limit) || 10,
+			sortBy: (req.query.sortBy as string) || 'created_at',
+			sortOrder: (req.query.sortOrder as string) || 'DESC'
+		})
 		successResponse(res, wheelsList, 'Wheels retrieved successfully')
 	} catch (error) {
 		console.error('Get wheels error:', error)

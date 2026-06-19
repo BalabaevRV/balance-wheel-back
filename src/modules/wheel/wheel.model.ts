@@ -1,6 +1,7 @@
 import { pool } from '@/config/database'
 import { IWheel, IWheelSave } from './wheel.types'
 import { PoolClient } from 'pg'
+import { PaginationParams } from '@/shared/types/pagination'
 
 export const getWheelsIdArrayByUser = async (userId: number, limit?: number) => {
 	let query: string = `
@@ -120,6 +121,45 @@ export const getWheelsList = async () => {
     `
 	const result = await pool.query(query)
 	return result.rows
+}
+export const wheelsListWithPagination = async (
+	params: PaginationParams
+): Promise<{ items: IWheel[]; total: number }> => {
+	const { page, limit, sortBy = 'created_at', sortOrder = 'DESC' } = params
+	const offset = (page - 1) * limit
+
+	const query = `
+      SELECT 
+        w.*,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'field_id', f.field_id,
+              'name', f.name,
+              'color_hex', f.color_hex
+            )
+          ) FILTER (WHERE f.field_id IS NOT NULL),
+          '[]'::json
+        ) as fields
+      FROM wheels w
+      LEFT JOIN wheels_fields wf ON w.wheel_id = wf.wheel_id
+      LEFT JOIN fields f ON wf.field_id = f.field_id
+      GROUP BY w.wheel_id
+      ORDER BY ${sortBy} ${sortOrder}
+      LIMIT $1 OFFSET $2
+    `
+
+	const countQuery = `
+      SELECT COUNT(*) as total
+      FROM wheels
+    `
+
+	const [result, countResult] = await Promise.all([pool.query(query, [limit, offset]), pool.query(countQuery)])
+
+	return {
+		items: result.rows,
+		total: parseInt(countResult.rows[0].total)
+	}
 }
 
 export const getWheelFromDb = async (wheelIds: number) => {

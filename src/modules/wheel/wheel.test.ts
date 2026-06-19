@@ -123,9 +123,9 @@ describe('User routes Integration Tests', () => {
 				.get('/api/wheels')
 				.set('Authorization', `Bearer ${currentUser.authToken}`)
 				.expect(200)
-
 			expect(response.body).toHaveProperty('success', true)
-			expect(response.body.data.length).toBeGreaterThan(0)
+			expect(response.body.data.items.length).toBeGreaterThan(0)
+			expect(response.body.data).toHaveProperty('total')
 		})
 	})
 	describe('GET /api/wheels/:id', () => {

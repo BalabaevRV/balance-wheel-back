@@ -4,11 +4,13 @@ import {
 	updateWheel,
 	createWheel,
 	addWheelToUser,
-	removeWheelFromUser
+	removeWheelFromUser,
+	wheelsListWithPagination
 } from '@/modules/wheel/wheel.model'
 import { IWheel, IWheelSave } from './wheel.types'
 import { IUser } from '@/modules/user/user.types'
 import { getUserInfoById } from '@/modules/user/user.service'
+import { PaginatedResponse, PaginationParams } from '@/shared/types/pagination'
 
 export const getWheelsByUserId = async (userId: number, limit?: number): Promise<IWheel[]> => {
 	try {
@@ -55,5 +57,22 @@ export const detachWheelFromUser = async (wheelId: number, userId: number): Prom
 	} catch (error) {
 		console.error('❌ Error during get wheel info:', error)
 		throw error
+	}
+}
+
+export const getWheelsWithPagination = async (params: PaginationParams): Promise<PaginatedResponse<IWheel>> => {
+	const { page, limit } = params
+	const { items, total } = await wheelsListWithPagination(params)
+
+	const totalPages = Math.ceil(total / limit)
+
+	return {
+		items,
+		total,
+		page,
+		limit,
+		totalPages,
+		hasNext: page < totalPages,
+		hasPrev: page > 1
 	}
 }
